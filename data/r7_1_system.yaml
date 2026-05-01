@@ -1,0 +1,265 @@
+id: r7_1_system
+year: 令和7年度
+session: 第1回
+subject: 電気通信システム
+subject_short: system
+total_questions: 20
+passing_score: 60
+perfect_score: 100
+questions:
+- id: r7_1_system_q01
+  number: 1
+  text: |-
+    静電容量がそれぞれC₁F及びC₂Fである二つのコンデンサが、それぞれV₁V及びV₂Vの電圧に充電されている場合に、二つのコンデンサの極性を合わせて並列に接続したときのコンデンサの両極間の電位差（V）はどれか。
+  options:
+  - (C₁V₁＋C₂V₂)/(C₁＋C₂)
+  - 2(C₁V₁＋C₂V₂)/(C₁＋C₂)
+  - (C₁V₂＋C₂V₁)/(C₁＋C₂)
+  - (C₁V₁＋C₂V₂)/2(C₁＋C₂)
+  - 2(C₁V₂＋C₂V₁)/(C₁＋C₂)
+  answer: 1
+  explanation: |-
+    並列接続後の電荷保存：Q=C₁V₁+C₂V₂。合成容量：C₁+C₂。電位差V=Q/(C₁+C₂)=(C₁V₁+C₂V₂)/(C₁+C₂)。
+- id: r7_1_system_q02
+  number: 2
+  text: |-
+    抵抗4Ω及び2Ω、誘導性リアクタンス3Ωを接続し、端子a-b間に交流電圧を加えたとき25Aの電流が流れた。この回路の全消費電力（W）はどれか。
+  options:
+  - 1,358
+  - 2,150
+  - 2,321
+  - 3,350
+  - 3,750
+  answer: 2
+  explanation: |-
+    4Ω-3Ω直列のインピーダンス=5Ω。並列合成後の実部から消費電力P=25²×R_total=2,150W。
+- id: r7_1_system_q03
+  number: 3
+  text: |-
+    ダイオードD₁・D₂と抵抗Rと電源Eで構成される回路に交流電圧Viを加えたとき、出力Voの波形はどれか（|V|>|E|）。
+  options:
+  - ①
+  - ②
+  - ③
+  - ④
+  - ⑤
+  answer: 4
+  explanation: |-
+    クリッパ回路。Vo=Vi（Vi>E時）、Vo=E（-E<Vi<E時）、Vo=-E（Vi<-E時）となる波形④。
+- id: r7_1_system_q04
+  number: 4
+  text: |-
+    論理回路においてMの論理素子がNAND素子であるとき、入力A及びBから出力Cの論理式を変形するとC＝A＋Bで表される。Mに入る論理素子はどれか。
+  options:
+  - AND
+  - NAND
+  - OR
+  - NOR
+  - XOR
+  answer: 3
+  explanation: ド・モルガンの定理によりNANDの組み合わせでOR動作が実現できる。答えはOR。
+- id: r7_1_system_q05
+  number: 5
+  text: |-
+    移動通信などで用いられるコーデックは、A/D・D/A変換機能のほかに、周波数帯域の有効利用を図るため信号の（　　）機能も持っている。
+  options:
+  - バッファ
+  - ローミング
+  - スクランブル
+  - 同報通信
+  - 圧縮・伸張
+  answer: 5
+  explanation: |-
+    コーデックはA/D・D/A変換に加えて音声・映像信号の圧縮・伸張機能を持ち、帯域を効率的に使用する。
+- id: r7_1_system_q06
+  number: 6
+  text: |-
+    内部抵抗20kΩ・最大目盛5Vの電圧計を、最大目盛100Vの電圧計として使うために必要な倍率器（kΩ）はどれか。
+  options:
+  - '100'
+  - '260'
+  - '360'
+  - '380'
+  - '400'
+  answer: 4
+  explanation: |-
+    倍率m=100/5=20。倍率器R=(m-1)×内部抵抗=19×20kΩ=380kΩ。
+- id: r7_1_system_q07
+  number: 7
+  text: |-
+    SN比の設計値が18dB以上必要なモデムで、受信端での信号レベルが-7dBmの場合、許容される雑音レベル（dBm）はどれか。
+  options:
+  - '-25'
+  - '-11'
+  - '11'
+  - '25'
+  - '32'
+  answer: 1
+  explanation: 雑音レベル≦信号レベル-SN比=-7-18=-25dBm。
+- id: r7_1_system_q08
+  number: 8
+  text: |-
+    搬送波を信号波で変調するキャリア変調のうち、位相角を変化させる方法と周波数を変化させる方法の総称はどれか。
+  options:
+  - PAM変調
+  - 角度変調
+  - 直接変調
+  - 振幅変調
+  - SSB変調
+  answer: 2
+  explanation: |-
+    PM（位相変調）とFM（周波数変調）はどちらも搬送波の角度を変化させるため、総称して角度変調という。
+- id: r7_1_system_q09
+  number: 9
+  text: 入力0に対し出力0、入力1に対し+と-を交互に出力する伝送路符号化方式はどれか。
+  options:
+  - CMI
+  - AMI
+  - NRZI
+  - NRZ
+  - MLT-3
+  answer: 2
+  explanation: |-
+    AMI（Alternate Mark Inversion）符号：0は0レベル、1は+/-を交互に出力する3値符号。
+- id: r7_1_system_q10
+  number: 10
+  text: |-
+    VoIPにおいて、IP電話の発信者からの要求に応じた着信先指定や呼制御信号の処理に用いられる技術は一般に（　　）といわれる。
+  options:
+  - ルーティング
+  - スイッチング
+  - QoS
+  - フロー制御
+  - シグナリング
+  answer: 5
+  explanation: |-
+    シグナリング：VoIPにおける呼の設定・解放・制御を行う技術。SIPやH.323などが使用される。
+- id: r7_1_system_q11
+  number: 11
+  text: |-
+    出回線数35回線の回線群で、3分ごとに使用中の回線数を測定した結果（9,18,15,8,11,16,21,10,12,9,17,22の12回分）から、出線能率（%）はどれか。
+  options:
+  - '14'
+  - '35'
+  - '40'
+  - '48'
+  - '60'
+  answer: 3
+  explanation: |-
+    平均使用回線数=(9+18+15+8+11+16+21+10+12+9+17+22)/12=168/12=14回線。出線能率=14/35×100=40%。
+- id: r7_1_system_q12
+  number: 12
+  text: |-
+    携帯電話でデータ通信を行う際、接続先の通信事業者やサービスを指定するための識別名は（　　）といわれる。
+  options:
+  - CID（Connection ID）
+  - SSID（Service Set ID）
+  - APN（Access Point Name）
+  - PIN（Personal ID Number）
+  - LLID（Logical Link ID）
+  answer: 3
+  explanation: |-
+    APN（Access Point Name）：モバイルデータ通信の接続先を指定する識別名。SIM変更時に設定が必要になる場合がある。
+- id: r7_1_system_q13
+  number: 13
+  text: |-
+    広域イーサネットにおいて、アクセス回線を通してユーザのトラヒックを収容し、当該ユーザグループへ転送する機能を持つのはどれか。
+  options:
+  - コアスイッチ
+  - エッジスイッチ
+  - ファイバチャネル
+  - トランスポンダ
+  - VoIPゲートウェイ
+  answer: 2
+  explanation: |-
+    エッジスイッチ：アクセス回線を収容しユーザのトラヒックをユーザグループへ転送する。コアスイッチはエッジスイッチ間を接続する。
+- id: r7_1_system_q14
+  number: 14
+  text: |-
+    IPv6ヘッダにある、IPv4のTTLに相当するフィールドはどれか。ルータを通過するたびに1減り、0になるとパケットが破棄される。
+  options:
+  - トラヒッククラス
+  - バージョン
+  - ホップリミット
+  - ペイロード長
+  - ネクストヘッダ
+  answer: 3
+  explanation: |-
+    IPv6ではTTLに相当するフィールドを「ホップリミット」という。0になるとパケットを破棄し無限ループを防ぐ。
+- id: r7_1_system_q15
+  number: 15
+  text: |-
+    SIPでは、セッションを確立する相手やSIPメッセージの到達先などのアドレス指定にインターネットでの標準的な形式である（　　）を用いている。
+  options:
+  - SSL
+  - ARP
+  - RTP
+  - UDP
+  - URI
+  answer: 5
+  explanation: |-
+    SIPのアドレス指定にはURI（Uniform Resource Identifier）形式（例：sip:user@domain）を使用する。
+- id: r7_1_system_q16
+  number: 16
+  text: |-
+    TCP/IPネットワークでpingコマンドによって相手ノードの疎通確認に使用されるプロトコルはどれか。
+  options:
+  - ICMP
+  - NNTP
+  - SNMP
+  - HTTP
+  - RADIUS
+  answer: 1
+  explanation: |-
+    ICMP（Internet Control Message Protocol）：pingはICMPのエコー要求・応答を使用してネットワーク疎通確認を行う。
+- id: r7_1_system_q17
+  number: 17
+  text: 衛星通信の受信機初段に設けられる低雑音増幅器の素子として用いられるのはどれか。
+  options:
+  - EDFA（Erbium Doped Fiber Amplifier）
+  - TWT（Traveling Wave Tube）
+  - GTO（Gate Turn-Off thyristor）
+  - HEMT（High Electron Mobility Transistor）
+  - IGBT（Insulated Gate Bipolar Transistor）
+  answer: 4
+  explanation: |-
+    HEMT（高電子移動度トランジスタ）：雑音特性が優れており、衛星通信の受信機初段の低雑音増幅器に広く使用される。
+- id: r7_1_system_q18
+  number: 18
+  text: |-
+    光ファイバ中の光の反射・屈折について、コアとクラッドの屈折率差が大きいほど全反射する入射角が小さくなることを示す法則はどれか。
+  options:
+  - ケプラー
+  - ヘンリー
+  - スネル
+  - ブラッグ
+  - プランク
+  answer: 3
+  explanation: |-
+    スネルの法則（屈折の法則）：n₁sinθ₁=n₂sinθ₂。屈折率差が大きいほど全反射の臨界角が小さくなる。
+- id: r7_1_system_q19
+  number: 19
+  text: |-
+    正弦波交流回路において、電圧実効値E、電流実効値I、位相差φとするとき、EIsinφ varで表される電力はどれか。
+  options:
+  - 瞬時
+  - 相対
+  - 有効
+  - 無効
+  - 皮相
+  answer: 4
+  explanation: |-
+    無効電力Q=EIsinφ（var）。有効電力P=EIcosφ（W）、皮相電力S=EI（VA）。
+- id: r7_1_system_q20
+  number: 20
+  text: |-
+    光アクセスネットワークで、光ファイバ回線を分岐せず事業者側とユーザ側を1対1で接続する構成は（　　）方式といわれる。
+  options:
+  - PDS
+  - SS
+  - xDSL
+  - HFC
+  - ADS
+  answer: 2
+  explanation: |-
+    SS（Single Star）方式：光ファイバを分岐せず1対1で接続する方式。PDSは光スプリッタで分岐する方式。

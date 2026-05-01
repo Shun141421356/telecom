@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a1628">
+<meta name="description" content="電気通信主任技術者試験 過去問学習アプリ">
+<title>電通主任 過去問アプリ</title>
+<link rel="manifest" href="manifest.json">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #070d1a;
+    --surface: #0e1d35;
+    --surface2: #152540;
+    --surface3: #1a2d4e;
+    --border: #1e3561;
+    --accent: #00c9ff;
+    --accent2: #0078ff;
+    --accent3: #7c3aed;
+    --green: #00e676;
+    --red: #ff4757;
+    --yellow: #ffd32a;
+    --text: #e8f0fe;
+    --text2: #8ab4f8;
+    --text3: #5f7a9d;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ===== TOP SCREEN ===== */
+  #screen-top {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(0,120,255,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(124,58,237,0.08) 0%, transparent 60%),
+                var(--bg);
+  }
+
+  .app-logo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 40px rgba(0,120,255,0.4);
+  }
+
+  .app-title {
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    text-align: center;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, var(--accent), #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .app-subtitle {
+    font-size: 13px;
+    color: var(--text3);
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .subject-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .subject-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .subject-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .subject-card.setubi::before { background: linear-gradient(135deg, rgba(0,201,255,0.08), transparent); }
+  .subject-card.houki::before  { background: linear-gradient(135deg, rgba(124,58,237,0.08), transparent); }
+  .subject-card.system::before { background: linear-gradient(135deg, rgba(0,230,118,0.08), transparent); }
+
+  .subject-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,120,255,0.2);
+  }
+
+  .subject-card:hover::before { opacity: 1; }
+  .subject-card:active { transform: translateY(0); }
+
+  .subject-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .setubi .subject-icon { background: rgba(0,201,255,0.15); }
+  .houki .subject-icon  { background: rgba(124,58,237,0.15); }
+  .system .subject-icon { background: rgba(0,230,118,0.15); }
+
+  .subject-info h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .subject-info p {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .subject-badge {
+    margin-left: auto;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .setubi .subject-badge { background: rgba(0,201,255,0.12); color: var(--accent); border: 1px solid rgba(0,201,255,0.2); }
+  .houki .subject-badge  { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(124,58,237,0.2); }
+  .system .subject-badge { background: rgba(0,230,118,0.12); color: var(--green); border: 1px solid rgba(0,230,118,0.2); }
+
+  .mode-section {
+    width: 100%;
+    max-width: 440px;
+    margin-top: 32px;
+  }
+
+  .mode-section h4 {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .mode-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .mode-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mode-btn:hover {
+    border-color: var(--accent2);
+    background: var(--surface2);
+  }
+
+  .mode-btn .mode-icon { font-size: 20px; }
+  .mode-btn .mode-label { font-size: 12px; color: var(--text2); }
+
+  /* ===== SUBJECT SCREEN ===== */
+  #screen-subject {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== QUIZ SCREEN ===== */
+  #screen-quiz {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== HEADER ===== */
+  .app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+  }
+
+  .back-btn:hover { background: var(--surface2); color: var(--text); }
+
+  .header-title {
+    font-size: 15px;
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .header-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    background: var(--surface3);
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ===== QUESTION LIST ===== */
+  .question-list {
+    padding: 16px;
+    flex: 1;
+  }
+
+  .section-title {
+    font-size: 12px;
+    color: var(--text3);
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    margin-top: 16px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title:first-child { margin-top: 0; }
+
+  .q-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .q-item:hover {
+    border-color: var(--accent2);
+    background: var(--surface2);
+  }
+
+  .q-num {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    background: rgba(0,120,255,0.1);
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    min-width: 54px;
+    text-align: center;
+  }
+
+  .q-preview {
+    font-size: 13px;
+    color: var(--text2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .q-status {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+
+  .q-status.correct { background: rgba(0,230,118,0.15); border-color: var(--green); color: var(--green); }
+  .q-status.wrong { background: rgba(255,71,87,0.15); border-color: var(--red); color: var(--red); }
+
+  /* ===== QUIZ AREA ===== */
+  .quiz-progress {
+    height: 3px;
+    background: var(--surface2);
+    position: relative;
+  }
+
+  .quiz-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.3s ease;
+  }
+
+  .quiz-body {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .quiz-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .quiz-group {
+    font-size: 11px;
+    color: var(--text3);
+    background: var(--surface2);
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .quiz-points {
+    font-size: 11px;
+    color: var(--yellow);
+    margin-left: auto;
+  }
+
+  .quiz-question {
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 24px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.6;
+    transition: all 0.2s;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent2);
+    background: var(--surface2);
+  }
+
+  .option-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .option-btn.selected { border-color: var(--accent2); background: rgba(0,120,255,0.08); }
+  .option-btn.correct  { border-color: var(--green); background: rgba(0,230,118,0.08); }
+  .option-btn.wrong    { border-color: var(--red); background: rgba(255,71,87,0.08); }
+  .option-btn.show-correct { border-color: var(--green); background: rgba(0,230,118,0.05); }
+  .option-btn:disabled { cursor: default; }
+
+  /* ===== RESULT PANEL ===== */
+  .result-panel {
+    margin-top: 16px;
+    border-radius: var(--radius);
+    padding: 16px;
+    display: none;
+  }
+
+  .result-panel.visible { display: block; }
+  .result-panel.correct-panel { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2); }
+  .result-panel.wrong-panel   { background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.2); }
+
+  .result-label {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  .correct-panel .result-label { color: var(--green); }
+  .wrong-panel .result-label   { color: var(--red); }
+
+  .result-explanation {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  /* ===== BOTTOM NAV ===== */
+  .quiz-footer {
+    padding: 12px 16px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+  }
+
+  .nav-btn {
+    flex: 1;
+    padding: 13px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover { background: var(--surface3); border-color: var(--accent2); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .nav-btn.primary {
+    background: linear-gradient(135deg, var(--accent2), #005fcc);
+    border-color: var(--accent2);
+  }
+
+  .nav-btn.primary:hover { background: linear-gradient(135deg, #0090ff, var(--accent2)); }
+
+  /* ===== SCORE SCREEN ===== */
+  #screen-score {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0,120,255,0.1) 0%, transparent 60%), var(--bg);
+  }
+
+  .score-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent2) var(--pct), var(--surface2) 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    position: relative;
+  }
+
+  .score-inner {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-num {
+    font-size: 36px;
+    font-weight: 900;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+  }
+
+  .score-total {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .score-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .score-msg {
+    font-size: 14px;
+    color: var(--text3);
+    margin-bottom: 32px;
+  }
+
+  .score-details {
+    width: 100%;
+    max-width: 340px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .score-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+  }
+
+  .score-stat-num {
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .score-stat-num.green { color: var(--green); }
+  .score-stat-num.red   { color: var(--red); }
+
+  .score-stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .score-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  /* ===== HIDDEN ===== */
+  .screen { display: none !important; }
+  .screen.active { display: flex !important; }
+  
+  #screen-top.active { display: flex !important; }
+  #screen-subject.active { display: flex !important; }
+  #screen-quiz.active { display: flex !important; }
+  #screen-score.active { display: flex !important; }
+
+  /* ===== SETTINGS ===== */
+  .settings-bar {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .settings-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .settings-chip.active {
+    background: rgba(0,120,255,0.12);
+    border-color: var(--accent2);
+    color: var(--accent);
+  }
+
+  .settings-chip:hover { background: var(--surface2); }
+
+  /* ===== LOGIN SCREEN ===== */
+  #screen-login,
+  #screen-register {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    background: radial-gradient(ellipse at 50% 30%, rgba(0,120,255,0.1) 0%, transparent 60%), var(--bg);
+  }
+
+  .login-box {
+    width: 100%;
+    max-width: 360px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+  }
+
+  .login-logo {
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .login-sub {
+    font-size: 12px;
+    color: var(--text3);
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .login-label {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .login-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .login-input:focus { border-color: var(--accent2); }
+
+  .login-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent2), #005fcc);
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    color: white;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 4px;
+  }
+
+  .login-btn:hover { opacity: 0.9; }
+  .login-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .login-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0 12px;
+  }
+
+  .login-divider::before,
+  .login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .login-divider span {
+    font-size: 11px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  .login-btn-sub {
+    width: 100%;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px;
+    color: var(--text2);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .login-btn-sub:hover {
+    border-color: var(--accent2);
+    color: var(--accent);
+    background: rgba(0,120,255,0.05);
+  }
+
+  .login-error {
+    font-size: 12px;
+    color: var(--red);
+    text-align: center;
+    margin-top: 12px;
+    min-height: 18px;
+  }
+
+  .login-note {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  /* ===== USER BAR ===== */
+  .user-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .user-name {
+    font-size: 13px;
+    font-weight: 500;
+    flex: 1;
+  }
+
+  .sync-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text2);
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .sync-btn:hover { border-color: var(--accent2); color: var(--accent); }
+  .sync-btn.syncing { color: var(--yellow); border-color: var(--yellow); }
+
+  .logout-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== INSTALL BTN ===== */
+  #install-btn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent3));
+    color: white;
+    border: none;
+    border-radius: 28px;
+    padding: 12px 20px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,120,255,0.5);
+    z-index: 999;
+  }
+
+  /* ===== LOADING ===== */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--surface2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== ADMIN SCREEN ===== */
+  #screen-admin {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .admin-body {
+    padding: 16px;
+    flex: 1;
+  }
+
+  .admin-login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .admin-section-title {
+    font-size: 12px;
+    color: var(--text3);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    margin-top: 20px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .admin-section-title:first-child { margin-top: 0; }
+
+  .admin-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .admin-input:focus { border-color: var(--accent2); }
+
+  .admin-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .admin-btn:hover { background: var(--surface3); border-color: var(--accent2); }
+  .admin-btn.danger { border-color: rgba(255,71,87,0.4); color: var(--red); }
+  .admin-btn.danger:hover { background: rgba(255,71,87,0.08); border-color: var(--red); }
+  .admin-btn.primary { background: linear-gradient(135deg, var(--accent2), #005fcc); border-color: var(--accent2); }
+  .admin-btn.primary:hover { opacity: 0.9; }
+
+  .admin-msg {
+    font-size: 12px;
+    margin-top: 8px;
+    min-height: 18px;
+  }
+
+  .admin-msg.ok  { color: var(--green); }
+  .admin-msg.err { color: var(--red); }
+
+  .user-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-row-info { flex: 1; }
+  .user-row-name { font-size: 14px; font-weight: 500; }
+  .user-row-uid  { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+  .user-row-date { font-size: 11px; color: var(--text3); }
+
+  /* ===== RANDOM MODE ===== */
+  .shuffle-badge {
+    font-size: 11px;
+    background: rgba(255,211,42,0.12);
+    color: var(--yellow);
+    border: 1px solid rgba(255,211,42,0.2);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+</div>
+
+<!-- Screen: Admin -->
+<div id="screen-admin" class="screen" style="flex-direction:column">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('login')">← 戻る</button>
+    <div class="header-title">管理者画面</div>
+    <div class="header-badge" id="admin-status-badge"></div>
+  </div>
+  <div class="admin-body">
+    <div id="admin-login-section">
+      <div class="admin-section-title">管理者認証</div>
+      <div class="admin-login-box">
+        <input class="admin-input" id="admin-key-input" type="password" placeholder="管理者キーを入力">
+        <button class="admin-btn primary" onclick="adminLogin()" style="width:100%">認証する</button>
+        <div class="admin-msg" id="admin-login-msg"></div>
+      </div>
+    </div>
+    <div id="admin-panel" style="display:none">
+      <div class="admin-section-title">ユーザー一覧</div>
+      <button class="admin-btn" onclick="adminLoadUsers()" style="margin-bottom:12px">🔄 一覧を更新</button>
+      <div id="admin-user-list">
+        <div style="font-size:13px;color:var(--text3)">「一覧を更新」を押してください</div>
+      </div>
+      <div class="admin-section-title">UIDを直接指定して削除</div>
+      <div class="admin-login-box">
+        <input class="admin-input" id="admin-del-uid" type="text" placeholder="削除するUIDを入力">
+        <button class="admin-btn danger" onclick="adminDeleteByUid()" style="width:100%">このUIDを削除</button>
+        <div class="admin-msg" id="admin-del-msg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Screen: Login -->
+<div id="screen-login" class="screen" style="flex-direction:column">
+  <div class="login-box">
+    <div class="login-logo">📡</div>
+    <div class="login-title">電通主任 過去問</div>
+    <div class="login-sub">アカウントにログイン</div>
+    <label class="login-label">ニックネーム</label>
+    <input class="login-input" id="login-name" type="text" placeholder="例：kawano" maxlength="20" autocomplete="username">
+    <label class="login-label">PINコード（4桁）</label>
+    <input class="login-input" id="login-pin" type="password" placeholder="0000" maxlength="4" inputmode="numeric" autocomplete="current-password">
+    <button class="login-btn" id="login-btn" onclick="doLogin()">ログイン</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-divider">
+      <span>アカウントをお持ちでない方</span>
+    </div>
+    <button class="login-btn-sub" onclick="goTo('register')">新規アカウント作成</button>
+    <div style="text-align:center;margin-top:16px">
+      <button onclick="goTo('admin')" style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">管理者ログイン</button>
+    </div>
+  </div>
+</div>
+
+<!-- Screen: Register -->
+<div id="screen-register" class="screen" style="flex-direction:column">
+  <div class="login-box">
+    <div class="login-logo">✨</div>
+    <div class="login-title">アカウント作成</div>
+    <div class="login-sub">ニックネームとPINを設定してください</div>
+    <label class="login-label">ニックネーム</label>
+    <input class="login-input" id="reg-name" type="text" placeholder="例：kawano" maxlength="20" autocomplete="username">
+    <label class="login-label">PINコード（4桁の数字）</label>
+    <input class="login-input" id="reg-pin" type="password" placeholder="0000" maxlength="4" inputmode="numeric" autocomplete="new-password">
+    <label class="login-label">PINコード（確認）</label>
+    <input class="login-input" id="reg-pin2" type="password" placeholder="0000" maxlength="4" inputmode="numeric" autocomplete="new-password">
+    <button class="login-btn" id="reg-btn" onclick="doRegister()">アカウントを作成</button>
+    <div class="login-error" id="reg-error"></div>
+    <div class="login-divider">
+      <span>すでにアカウントをお持ちの方</span>
+    </div>
+    <button class="login-btn-sub" onclick="goTo('login')">ログイン画面に戻る</button>
+    <div class="login-note">
+      ニックネーム＋PINで成績がクラウドに保存されます。<br>
+      同じ情報でどのデバイスからでもログインできます。
+    </div>
+  </div>
+</div>
+
+<!-- Screen: Top -->
+<div id="screen-top" class="screen active" style="flex-direction:column">
+  <div class="app-logo">📡</div>
+  <div class="app-title">電通主任 過去問</div>
+  <div class="app-subtitle">電気通信主任技術者試験 学習アプリ</div>
+
+  <div class="subject-grid">
+    <div class="section-title" style="margin-top:0;font-size:12px;color:var(--accent);letter-spacing:1px">📅 令和7年度 第2回</div>
+    <div class="subject-card setubi" onclick="openSubject('r7_2_setubi')">
+      <div class="subject-icon">🔌</div>
+      <div class="subject-info">
+        <h3>伝送交換設備及び設備管理</h3>
+        <p>問1〜問9 · 満点150点 · 合格90点</p>
+      </div>
+      <div class="subject-badge" id="badge-r7_2_setubi">-</div>
+    </div>
+    <div class="subject-card houki" onclick="openSubject('r7_2_houki')">
+      <div class="subject-icon">⚖️</div>
+      <div class="subject-info">
+        <h3>法規</h3>
+        <p>問1〜問5 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r7_2_houki">-</div>
+    </div>
+    <div class="subject-card system" onclick="openSubject('r7_2_system')">
+      <div class="subject-icon">💡</div>
+      <div class="subject-info">
+        <h3>電気通信システム</h3>
+        <p>問1〜問20 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r7_2_system">-</div>
+    </div>
+
+    <div class="section-title" style="font-size:12px;color:var(--accent);letter-spacing:1px">📅 令和7年度 第1回</div>
+    <div class="subject-card setubi" onclick="openSubject('r7_1_setubi')">
+      <div class="subject-icon">🔌</div>
+      <div class="subject-info">
+        <h3>伝送交換設備及び設備管理</h3>
+        <p>問1〜問9 · 満点150点 · 合格90点</p>
+      </div>
+      <div class="subject-badge" id="badge-r7_1_setubi">-</div>
+    </div>
+    <div class="subject-card houki" onclick="openSubject('r7_1_houki')">
+      <div class="subject-icon">⚖️</div>
+      <div class="subject-info">
+        <h3>法規</h3>
+        <p>問1〜問5 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r7_1_houki">-</div>
+    </div>
+    <div class="subject-card system" onclick="openSubject('r7_1_system')">
+      <div class="subject-icon">💡</div>
+      <div class="subject-info">
+        <h3>電気通信システム</h3>
+        <p>問1〜問20 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r7_1_system">-</div>
+    </div>
+    <div class="section-title" style="font-size:12px;color:var(--accent);letter-spacing:1px">📅 令和6年度 第2回</div>
+    <div class="subject-card setubi" onclick="openSubject('r6_2_setubi')">
+      <div class="subject-icon">🔌</div>
+      <div class="subject-info">
+        <h3>伝送交換設備及び設備管理</h3>
+        <p>問1〜問9 · 満点150点 · 合格90点</p>
+      </div>
+      <div class="subject-badge" id="badge-r6_2_setubi">-</div>
+    </div>
+    <div class="subject-card houki" onclick="openSubject('r6_2_houki')">
+      <div class="subject-icon">⚖️</div>
+      <div class="subject-info">
+        <h3>法規</h3>
+        <p>問1〜問5 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r6_2_houki">-</div>
+    </div>
+    <div class="subject-card system" onclick="openSubject('r6_2_system')">
+      <div class="subject-icon">💡</div>
+      <div class="subject-info">
+        <h3>電気通信システム</h3>
+        <p>問1〜問20 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r6_2_system">-</div>
+    </div>
+
+    <div class="section-title" style="font-size:12px;color:var(--accent);letter-spacing:1px">📅 令和6年度 第1回</div>
+    <div class="subject-card setubi" onclick="openSubject('r6_1_setubi')">
+      <div class="subject-icon">🔌</div>
+      <div class="subject-info">
+        <h3>伝送交換設備及び設備管理</h3>
+        <p>問1〜問9 · 満点150点 · 合格90点</p>
+      </div>
+      <div class="subject-badge" id="badge-r6_1_setubi">-</div>
+    </div>
+    <div class="subject-card houki" onclick="openSubject('r6_1_houki')">
+      <div class="subject-icon">⚖️</div>
+      <div class="subject-info">
+        <h3>法規</h3>
+        <p>問1〜問5 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r6_1_houki">-</div>
+    </div>
+    <div class="subject-card system" onclick="openSubject('r6_1_system')">
+      <div class="subject-icon">💡</div>
+      <div class="subject-info">
+        <h3>電気通信システム</h3>
+        <p>問1〜問20 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r6_1_system">-</div>
+    </div>
+  </div>
+
+  <div class="mode-section">
+    <h4>学習モード</h4>
+    <div class="mode-buttons">
+      <button class="mode-btn" onclick="startAllShuffle()">
+        <span class="mode-icon">🔀</span>
+        <span>全科目シャッフル</span>
+        <span class="mode-label">全問ランダム出題</span>
+      </button>
+      <button class="mode-btn" onclick="showStats()">
+        <span class="mode-icon">📊</span>
+        <span>成績確認</span>
+        <span class="mode-label">正答率を確認</span>
+      </button>
+      <button class="mode-btn" onclick="resetProgress()">
+        <span class="mode-icon">🔄</span>
+        <span>履歴リセット</span>
+        <span class="mode-label">学習記録をクリア</span>
+      </button>
+      <button class="mode-btn" onclick="startWrong()">
+        <span class="mode-icon">❌</span>
+        <span>苦手問題</span>
+        <span class="mode-label">間違えた問題のみ</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="settings-bar">
+    <div class="settings-chip" id="chip-shuffle" onclick="toggleSetting('shuffle')">
+      🔀 シャッフル
+    </div>
+    <div class="settings-chip" id="chip-instant" onclick="toggleSetting('instant')">
+      ⚡ 即時解答表示
+    </div>
+  </div>
+
+  <div class="user-bar" id="user-bar">
+    <div class="user-avatar" id="user-avatar">?</div>
+    <div class="user-name" id="user-name-display">未ログイン</div>
+    <button class="sync-btn" id="sync-btn" onclick="syncNow()">☁ 同期</button>
+    <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+  </div>
+</div>
+
+<!-- Screen: Subject (question list) -->
+<div id="screen-subject" class="screen" style="flex-direction:column">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('top')">← 戻る</button>
+    <div class="header-title" id="subject-screen-title">科目名</div>
+    <div class="header-badge" id="subject-screen-badge"></div>
+  </div>
+  <div class="question-list" id="question-list"></div>
+</div>
+
+<!-- Screen: Quiz -->
+<div id="screen-quiz" class="screen" style="flex-direction:column">
+  <div class="app-header">
+    <button class="back-btn" onclick="goBackFromQuiz()">← 戻る</button>
+    <div class="header-title" id="quiz-title">問題</div>
+    <div class="header-badge" id="quiz-counter">1/20</div>
+  </div>
+  <div class="quiz-progress">
+    <div class="quiz-progress-bar" id="progress-bar"></div>
+  </div>
+  <div class="quiz-body" id="quiz-body">
+    <div class="quiz-meta">
+      <span class="quiz-group" id="q-group"></span>
+      <span id="shuffle-badge-el"></span>
+      <span class="quiz-points" id="q-points"></span>
+    </div>
+    <div class="quiz-question" id="q-text"></div>
+    <div class="options-list" id="options-list"></div>
+    <div class="result-panel" id="result-panel">
+      <div class="result-label" id="result-label"></div>
+      <div class="result-explanation" id="result-explanation"></div>
+    </div>
+  </div>
+  <div class="quiz-footer">
+    <button class="nav-btn" id="btn-prev" onclick="prevQ()">← 前</button>
+    <button class="nav-btn primary" id="btn-next" onclick="nextQ()">次 →</button>
+  </div>
+</div>
+
+<!-- Screen: Score -->
+<div id="screen-score" class="screen" style="flex-direction:column">
+  <div class="score-circle" id="score-circle" style="--pct:0%">
+    <div class="score-inner">
+      <div class="score-num" id="score-pct-text">0%</div>
+      <div class="score-total" id="score-ratio">0/0</div>
+    </div>
+  </div>
+  <div class="score-title" id="score-title">お疲れさまでした！</div>
+  <div class="score-msg" id="score-msg"></div>
+  <div class="score-details">
+    <div class="score-stat">
+      <div class="score-stat-num green" id="score-correct">0</div>
+      <div class="score-stat-label">正解</div>
+    </div>
+    <div class="score-stat">
+      <div class="score-stat-num red" id="score-wrong">0</div>
+      <div class="score-stat-label">不正解</div>
+    </div>
+  </div>
+  <div class="score-actions">
+    <button class="nav-btn primary" onclick="retryQuiz()">もう一度挑戦</button>
+    <button class="nav-btn" onclick="reviewWrong()">間違えた問題を確認</button>
+    <button class="nav-btn" onclick="goTo('top')">科目選択に戻る</button>
+  </div>
+</div>
+
+<!-- Install PWA Button -->
+<button id="install-btn" onclick="installPWA()">📱 アプリをインストール</button>
+
+<script>
+// ===== CONFIG =====
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwGXghvWEXT97drh8YHI7fUlZ_WoFg339NEV_8YqXd7mJ80pjm2GZbAw3yS30auPk2y/exec';
+const ADMIN_KEY = 'admin';
+
+// ===== STATE =====
+let allData = {};
+let currentSubject = null;
+let currentQuestions = [];
+let currentIndex = 0;
+let userAnswers = {};
+let settings = { shuffle: false, instant: true };
+let progress = {};
+let quizContext = null;
+let deferredInstall = null;
+let currentUser = null; // { uid, name }
+let syncTimer = null;
+
+const SUBJECTS = [
+  { id: 'r7_2_setubi', file: 'data/r7_2_setubi.yaml', year: 'R7-2' },
+  { id: 'r7_2_houki',  file: 'data/r7_2_houki.yaml',  year: 'R7-2' },
+  { id: 'r7_2_system', file: 'data/r7_2_system.yaml', year: 'R7-2' },
+  { id: 'r6_2_setubi', file: 'data/r6_2_setubi.yaml', year: 'R6-2' },
+  { id: 'r6_2_houki',  file: 'data/r6_2_houki.yaml',  year: 'R6-2' },
+  { id: 'r6_2_system', file: 'data/r6_2_system.yaml', year: 'R6-2' },
+  { id: 'r7_1_setubi', file: 'data/r7_1_setubi.yaml', year: 'R7-1' },
+  { id: 'r7_1_houki',  file: 'data/r7_1_houki.yaml',  year: 'R7-1' },
+  { id: 'r7_1_system', file: 'data/r7_1_system.yaml', year: 'R7-1' },
+  { id: 'r6_1_setubi', file: 'data/r6_1_setubi.yaml', year: 'R6-1' },
+  { id: 'r6_1_houki',  file: 'data/r6_1_houki.yaml',  year: 'R6-1' },
+  { id: 'r6_1_system', file: 'data/r6_1_system.yaml', year: 'R6-1' },
+];
+
+// ===== INIT =====
+async function init() {
+  try {
+    const s = localStorage.getItem('telecom_settings');
+    if (s) settings = { ...settings, ...JSON.parse(s) };
+  } catch(e) {}
+
+  updateSettingsUI();
+
+  // Load all JSON
+  for (const sub of SUBJECTS) {
+    try {
+      const res = await fetch(sub.file);
+      const text = await res.text();
+      allData[sub.id] = jsyaml.load(text);
+    } catch(e) {
+      console.warn(`Failed to load ${sub.file}`, e);
+    }
+  }
+
+  // Check saved login
+  try {
+    const saved = localStorage.getItem('telecom_user');
+    if (saved) {
+      currentUser = JSON.parse(saved);
+      await loadProgressFromGAS();
+      showTopScreen();
+    } else {
+      goTo('login');
+    }
+  } catch(e) {
+    goTo('login');
+  }
+
+  document.getElementById('loading').style.display = 'none';
+
+  // Enterキーでログイン
+  document.getElementById('login-pin').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+  document.getElementById('login-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('login-pin').focus();
+  });
+
+  // Enterキーでアカウント作成
+  document.getElementById('reg-pin2').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doRegister();
+  });
+  document.getElementById('reg-pin').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('reg-pin2').focus();
+  });
+  document.getElementById('reg-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('reg-pin').focus();
+  });
+}
+
+// ===== LOGIN =====
+async function doLogin() {
+  const name = document.getElementById('login-name').value.trim();
+  const pin  = document.getElementById('login-pin').value.trim();
+  const errEl = document.getElementById('login-error');
+  const btn   = document.getElementById('login-btn');
+
+  errEl.textContent = '';
+
+  if (!name) { errEl.textContent = 'ニックネームを入力してください'; return; }
+  if (!/^\d{4}$/.test(pin)) { errEl.textContent = 'PINコードは4桁の数字で入力してください'; return; }
+
+  btn.disabled = true;
+  btn.textContent = '確認中...';
+
+  const uid = `${name}_${btoa(name + ':' + pin).replace(/=/g, '')}`;
+
+  try {
+    const res = await fetch(`${GAS_URL}?uid=${encodeURIComponent(uid)}`);
+    const data = await res.json();
+
+    if (data.ok) {
+      const p = data.progress || {};
+
+      // __registered フラグがない＝未登録のuidとして扱う
+      if (!p.__registered) {
+        errEl.textContent = 'ニックネームまたはPINコードが正しくありません。アカウント未登録の場合は新規作成してください。';
+        btn.disabled = false;
+        btn.textContent = 'ログイン';
+        return;
+      }
+
+      currentUser = { uid, name };
+      localStorage.setItem('telecom_user', JSON.stringify(currentUser));
+      progress = p;
+      saveProgressLocal();
+      showTopScreen();
+
+    } else {
+      errEl.textContent = 'ログインに失敗しました。もう一度お試しください。';
+    }
+  } catch(e) {
+    // オフライン時：ローカルに保存済みユーザーがあれば許可
+    const savedUser = localStorage.getItem('telecom_user');
+    if (savedUser) {
+      const saved = JSON.parse(savedUser);
+      if (saved.uid === uid) {
+        currentUser = saved;
+        const local = localStorage.getItem('telecom_progress');
+        if (local) progress = JSON.parse(local);
+        errEl.textContent = '⚠ オフラインモードで起動しました';
+        setTimeout(showTopScreen, 1200);
+      } else {
+        errEl.textContent = 'オフラインのため確認できません。接続後に再試行してください。';
+      }
+    } else {
+      errEl.textContent = 'オフラインのため確認できません。接続後に再試行してください。';
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'ログイン';
+}
+
+// ===== REGISTER =====
+async function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const pin   = document.getElementById('reg-pin').value.trim();
+  const pin2  = document.getElementById('reg-pin2').value.trim();
+  const errEl = document.getElementById('reg-error');
+  const btn   = document.getElementById('reg-btn');
+
+  errEl.textContent = '';
+
+  if (!name) { errEl.textContent = 'ニックネームを入力してください'; return; }
+  if (name.length < 2) { errEl.textContent = 'ニックネームは2文字以上で入力してください'; return; }
+  if (!/^\d{4}$/.test(pin)) { errEl.textContent = 'PINコードは4桁の数字で入力してください'; return; }
+  if (pin !== pin2) { errEl.textContent = 'PINコードが一致しません'; return; }
+
+  btn.disabled = true;
+  btn.textContent = '作成中...';
+
+  const uid = `${name}_${btoa(name + ':' + pin).replace(/=/g, '')}`;
+
+  try {
+    // まず同じアカウントが既に存在するか確認
+    const res = await fetch(`${GAS_URL}?uid=${encodeURIComponent(uid)}`);
+    const data = await res.json();
+
+    if (data.ok && data.progress && data.progress.__registered) {
+      // __registered フラグあり＝すでに登録済み
+      errEl.textContent = 'このニックネームとPINの組み合わせはすでに使用されています。別の組み合わせをお試しください。';
+      btn.disabled = false;
+      btn.textContent = 'アカウントを作成';
+      return;
+    }
+
+    // 新規作成：__registered フラグをprogress内に入れてGASに登録
+    const initialProgress = { __registered: true };
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid, progress: initialProgress })
+    });
+
+    currentUser = { uid, name };
+    localStorage.setItem('telecom_user', JSON.stringify(currentUser));
+    progress = initialProgress;
+    saveProgressLocal();
+
+    showTopScreen();
+
+  } catch(e) {
+    // オフライン時：登録フラグをローカルにだけ保存して起動
+    currentUser = { uid, name };
+    localStorage.setItem('telecom_user', JSON.stringify(currentUser));
+    progress = { __registered: true };
+    saveProgressLocal();
+    errEl.textContent = '⚠ オフラインモードで作成しました。接続後に同期してください。';
+    setTimeout(showTopScreen, 1500);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'アカウントを作成';
+}
+
+function doLogout() {
+  if (!confirm('ログアウトしますか？')) return;
+  currentUser = null;
+  progress = {};
+  localStorage.removeItem('telecom_user');
+  localStorage.removeItem('telecom_progress');
+  updateBadges();
+  goTo('login');
+}
+
+function showTopScreen() {
+  updateBadges();
+  updateUserBar();
+  goTo('top');
+}
+
+function updateUserBar() {
+  if (!currentUser) return;
+  const initial = currentUser.name.charAt(0).toUpperCase();
+  document.getElementById('user-avatar').textContent = initial;
+  document.getElementById('user-name-display').textContent = currentUser.name;
+}
+
+// ===== GAS SYNC =====
+async function loadProgressFromGAS() {
+  if (!currentUser) return;
+  try {
+    const res = await fetch(`${GAS_URL}?uid=${encodeURIComponent(currentUser.uid)}`);
+    const data = await res.json();
+    if (data.ok && data.progress && Object.keys(data.progress).length > 0) {
+      // サーバーとローカルをマージ（より多く解いた方を優先）
+      const local = {};
+      try {
+        const lp = localStorage.getItem('telecom_progress');
+        if (lp) Object.assign(local, JSON.parse(lp));
+      } catch(e) {}
+
+      const merged = { ...data.progress };
+      for (const [id, val] of Object.entries(local)) {
+        if (!merged[id] || (val.count || 0) > (merged[id].count || 0)) {
+          merged[id] = val;
+        }
+      }
+      progress = merged;
+      saveProgressLocal();
+    }
+  } catch(e) {
+    console.warn('GAS load failed:', e);
+  }
+}
+
+async function saveProgressToGAS() {
+  if (!currentUser) return;
+  const syncBtn = document.getElementById('sync-btn');
+  if (syncBtn) { syncBtn.classList.add('syncing'); syncBtn.textContent = '⟳ 同期中'; }
+
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uid: currentUser.uid, progress })
+    });
+    if (syncBtn) { syncBtn.classList.remove('syncing'); syncBtn.textContent = '☁ 同期'; }
+  } catch(e) {
+    if (syncBtn) { syncBtn.classList.remove('syncing'); syncBtn.textContent = '☁ 同期'; }
+    console.warn('GAS save failed:', e);
+  }
+}
+
+async function syncNow() {
+  const syncBtn = document.getElementById('sync-btn');
+  syncBtn.textContent = '⟳ 読込中';
+  syncBtn.classList.add('syncing');
+  await loadProgressFromGAS();
+  await saveProgressToGAS();
+  syncBtn.classList.remove('syncing');
+  syncBtn.textContent = '✓ 完了';
+  setTimeout(() => { syncBtn.textContent = '☁ 同期'; }, 2000);
+  updateBadges();
+}
+
+// 問題を解いた後、一定時間後に自動同期
+function scheduleSync() {
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    saveProgressToGAS();
+  }, 3000); // 3秒後に自動同期
+}
+
+// ===== PROGRESS SAVE =====
+function saveProgressLocal() {
+  localStorage.setItem('telecom_progress', JSON.stringify(progress));
+}
+
+function saveProgress() {
+  saveProgressLocal();
+  scheduleSync();
+}
+
+// ===== BADGES =====
+function updateBadges() {
+  for (const sub of SUBJECTS) {
+    const d = allData[sub.id];
+    if (!d) continue;
+    const qs = d.questions;
+    const done    = qs.filter(q => progress[q.id] !== undefined).length;
+    const correct = qs.filter(q => progress[q.id]?.correct).length;
+    const el = document.getElementById(`badge-${sub.id}`);
+    if (el) {
+      if (done > 0) el.textContent = `${correct}/${qs.length}`;
+      else el.textContent = `${qs.length}問`;
+    }
+  }
+}
+
+// ===== NAVIGATION =====
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(`screen-${screen}`);
+  if (el) el.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function openSubject(subjectId) {
+  currentSubject = subjectId;
+  const data = allData[subjectId];
+  if (!data) {
+    // どのファイルが読めていないか確認
+    const sub = SUBJECTS.find(s => s.id === subjectId);
+    const file = sub ? sub.file : subjectId;
+    alert(`データの読み込みに失敗しています。\nファイル: ${file}\n\nGitHub Pagesの場合、dataフォルダにJSONが正しく配置されているか確認してください。`);
+    return;
+  }
+
+  document.getElementById('subject-screen-title').textContent = data.subject;
+  document.getElementById('subject-screen-badge').textContent = `${data.questions.length}問`;
+
+  const container = document.getElementById('question-list');
+  container.innerHTML = '';
+
+  const groups = {};
+  for (const q of data.questions) {
+    const g = q.group || '問題';
+    if (!groups[g]) groups[g] = [];
+    groups[g].push(q);
+  }
+
+  const modeDiv = document.createElement('div');
+  modeDiv.style.cssText = 'display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap';
+  modeDiv.innerHTML = `
+    <button class="nav-btn primary" style="flex:1;min-width:120px;padding:10px" onclick="startSubjectQuiz('${subjectId}')">全問解く</button>
+    <button class="nav-btn" style="flex:1;min-width:120px;padding:10px" onclick="startSubjectShuffle('${subjectId}')">🔀 ランダム</button>
+  `;
+  container.appendChild(modeDiv);
+
+  for (const [group, qs] of Object.entries(groups)) {
+    const sec = document.createElement('div');
+    sec.className = 'section-title';
+    sec.textContent = group;
+    container.appendChild(sec);
+
+    for (const q of qs) {
+      const div = document.createElement('div');
+      div.className = 'q-item';
+      const p = progress[q.id];
+      let statusHtml = `<div class="q-status"></div>`;
+      if (p !== undefined) {
+        statusHtml = `<div class="q-status ${p.correct ? 'correct' : 'wrong'}">${p.correct ? '✓' : '✗'}</div>`;
+      }
+      div.innerHTML = `
+        <span class="q-num">${q.number}</span>
+        <span class="q-preview">${q.text.slice(0,40)}…</span>
+        ${statusHtml}
+      `;
+      div.onclick = () => startSingleQuiz(subjectId, q.id);
+      container.appendChild(div);
+    }
+  }
+
+  goTo('subject');
+}
+
+function goBackFromQuiz() {
+  if (quizContext === 'subject' || quizContext === 'single') {
+    goTo('subject');
+  } else {
+    goTo('top');
+  }
+}
+
+// ===== QUIZ MODES =====
+function startSubjectQuiz(subjectId) {
+  const data = allData[subjectId];
+  let qs = [...data.questions];
+  if (settings.shuffle) qs = shuffle(qs);
+  startQuiz(qs, 'subject');
+}
+
+function startSubjectShuffle(subjectId) {
+  const data = allData[subjectId];
+  let qs = shuffle([...data.questions]);
+  startQuiz(qs, 'subject');
+}
+
+function startSingleQuiz(subjectId, qId) {
+  const data = allData[subjectId];
+  const q = data.questions.find(q => q.id === qId);
+  startQuiz([q], 'single');
+}
+
+function startAllShuffle() {
+  let qs = [];
+  for (const sub of SUBJECTS) {
+    if (allData[sub.id]) qs = qs.concat(allData[sub.id].questions);
+  }
+  qs = shuffle(qs);
+  startQuiz(qs, 'all');
+}
+
+function startWrong() {
+  let qs = [];
+  for (const sub of SUBJECTS) {
+    if (allData[sub.id]) {
+      for (const q of allData[sub.id].questions) {
+        if (progress[q.id] && !progress[q.id].correct) qs.push(q);
+      }
+    }
+  }
+  if (qs.length === 0) { alert('間違えた問題がありません！'); return; }
+  qs = shuffle(qs);
+  startQuiz(qs, 'wrong');
+}
+
+function startQuiz(qs, context) {
+  currentQuestions = qs;
+  currentIndex = 0;
+  userAnswers = {};
+  quizContext = context;
+  renderQuestion();
+  goTo('quiz');
+}
+
+// ===== RENDER QUESTION =====
+function renderQuestion() {
+  const q = currentQuestions[currentIndex];
+  const total = currentQuestions.length;
+
+  document.getElementById('quiz-counter').textContent = `${currentIndex+1}/${total}`;
+  document.getElementById('quiz-title').textContent = '問題';
+  document.getElementById('progress-bar').style.width = `${((currentIndex+1)/total)*100}%`;
+  document.getElementById('q-group').textContent = q.group || '';
+  document.getElementById('q-points').textContent = q.points ? `${q.points}点` : '';
+
+  // 科目名バッジ（年度・科目を表示）
+  const shuffleBadgeEl = document.getElementById('shuffle-badge-el');
+  if (quizContext === 'all') {
+    shuffleBadgeEl.innerHTML = '<span class="shuffle-badge">🔀 全科目ランダム</span>';
+  } else if (quizContext === 'wrong') {
+    shuffleBadgeEl.innerHTML = '<span class="shuffle-badge" style="background:rgba(255,71,87,0.12);color:var(--red);border-color:rgba(255,71,87,0.3)">❌ 苦手問題</span>';
+  } else {
+    // 科目名を取得して表示
+    const subData = allData[currentSubject];
+    if (subData) {
+      const yearLabel = { 'r7_2': 'R7-2', 'r7_1': 'R7-1' };
+      const parts = currentSubject.match(/^(r\d+_\d+)_(.+)$/);
+      const yearKey = parts ? parts[1] : '';
+      const yLabel = yearLabel[yearKey] || yearKey;
+      shuffleBadgeEl.innerHTML = `<span class="shuffle-badge" style="background:rgba(0,120,255,0.1);color:var(--accent);border-color:rgba(0,120,255,0.2)">${yLabel} ${subData.subject}</span>`;
+    } else {
+      shuffleBadgeEl.innerHTML = '';
+    }
+  }
+  document.getElementById('q-text').textContent = q.text;
+
+  const optList = document.getElementById('options-list');
+  optList.innerHTML = '';
+  const answered = userAnswers[q.id];
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    const num = String.fromCharCode(9312 + i);
+
+    if (answered !== undefined) {
+      if (i + 1 === q.answer) btn.classList.add('correct');
+      else if (i + 1 === answered && answered !== q.answer) btn.classList.add('wrong');
+      btn.disabled = true;
+    }
+
+    btn.innerHTML = `<span class="option-num">${num}</span><span>${opt}</span>`;
+    if (answered === undefined) btn.onclick = () => selectAnswer(i + 1);
+    optList.appendChild(btn);
+  });
+
+  const panel = document.getElementById('result-panel');
+  const label = document.getElementById('result-label');
+  const expl  = document.getElementById('result-explanation');
+
+  if (answered !== undefined) {
+    panel.style.display = 'block';
+    const isCorrect = answered === q.answer;
+    panel.className = `result-panel visible ${isCorrect ? 'correct' : 'wrong'}-panel`;
+    label.textContent = isCorrect ? '✅ 正解！' : `❌ 不正解（正解：${q.answer}番）`;
+    expl.textContent = q.explanation || '';
+  } else {
+    panel.style.display = 'none';
+    panel.className = 'result-panel';
+  }
+
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = currentIndex === total - 1 ? '結果を見る' : '次 →';
+}
+
+function selectAnswer(selected) {
+  const q = currentQuestions[currentIndex];
+  if (userAnswers[q.id] !== undefined) return;
+
+  userAnswers[q.id] = selected;
+  const isCorrect = selected === q.answer;
+
+  progress[q.id] = { correct: isCorrect, count: (progress[q.id]?.count || 0) + 1 };
+  saveProgress(); // ローカル保存＋3秒後に自動GAS同期
+
+  renderQuestion();
+
+  if (settings.instant) {
+    setTimeout(() => {
+      document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+  }
+}
+
+function prevQ() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    renderQuestion();
+    document.getElementById('quiz-body').scrollTop = 0;
+  }
+}
+
+function nextQ() {
+  const total = currentQuestions.length;
+  if (currentIndex < total - 1) {
+    currentIndex++;
+    renderQuestion();
+    document.getElementById('quiz-body').scrollTop = 0;
+  } else {
+    showScore();
+  }
+}
+
+// ===== SCORE =====
+function showScore() {
+  const qs = currentQuestions.filter(q => userAnswers[q.id] !== undefined);
+  const correct = qs.filter(q => userAnswers[q.id] === q.answer).length;
+  const total = currentQuestions.length;
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+  document.getElementById('score-pct-text').textContent = `${pct}%`;
+  document.getElementById('score-ratio').textContent = `${correct}/${total}`;
+  document.getElementById('score-correct').textContent = correct;
+  document.getElementById('score-wrong').textContent = total - correct;
+  document.getElementById('score-circle').style.setProperty('--pct', `${pct}%`);
+
+  let msg = '';
+  if (pct >= 90) msg = '素晴らしい！合格ラインを大きく超えています。';
+  else if (pct >= 70) msg = 'もう少し！苦手問題を中心に復習しましょう。';
+  else if (pct >= 50) msg = '基礎を固めて再チャレンジしましょう。';
+  else msg = '繰り返し練習で実力をつけていきましょう。';
+
+  document.getElementById('score-msg').textContent = msg;
+  updateBadges();
+  goTo('score');
+}
+
+function retryQuiz() {
+  let qs = [...currentQuestions];
+  if (settings.shuffle) qs = shuffle(qs);
+  startQuiz(qs, quizContext);
+}
+
+function reviewWrong() {
+  const wrongQs = currentQuestions.filter(q => {
+    const a = userAnswers[q.id];
+    return a !== undefined && a !== q.answer;
+  });
+  if (wrongQs.length === 0) { alert('全問正解です！'); return; }
+  startQuiz(wrongQs, quizContext);
+}
+
+// ===== SETTINGS =====
+function toggleSetting(key) {
+  settings[key] = !settings[key];
+  updateSettingsUI();
+  saveSettings();
+}
+
+function updateSettingsUI() {
+  const shuffleChip = document.getElementById('chip-shuffle');
+  const instantChip = document.getElementById('chip-instant');
+  if (shuffleChip) shuffleChip.classList.toggle('active', settings.shuffle);
+  if (instantChip) instantChip.classList.toggle('active', settings.instant);
+}
+
+function saveSettings() {
+  localStorage.setItem('telecom_settings', JSON.stringify(settings));
+}
+
+function resetProgress() {
+  if (!confirm('学習記録をすべてリセットしますか？\nサーバー上のデータも上書きされます。')) return;
+  progress = {};
+  saveProgress();
+  updateBadges();
+  alert('リセットしました。');
+}
+
+function showStats() {
+  // 科目の表示名マッピング
+  const subjectLabel = {
+    'setubi': '伝送交換設備及び設備管理',
+    'houki':  '法規',
+    'system': '電気通信システム',
+  };
+  const yearLabel = {
+    'r7_2': '令和7年度 第2回',
+    'r7_1': '令和7年度 第1回',
+    'r6_2': '令和6年度 第2回',
+    'r6_1': '令和6年度 第1回',
+  };
+
+  let lines = ['📊 科目別正答率\n'];
+
+  // 年度ごとにグループ化して表示
+  const yearGroups = {};
+  for (const sub of SUBJECTS) {
+    const d = allData[sub.id];
+    if (!d) continue;
+
+    // IDから年度キーと科目キーを抽出（例：r7_2_setubi → year=r7_2, subj=setubi）
+    const parts = sub.id.match(/^(r\d+_\d+)_(.+)$/);
+    const yearKey = parts ? parts[1] : sub.id;
+    const subjKey = parts ? parts[2] : sub.id;
+
+    if (!yearGroups[yearKey]) yearGroups[yearKey] = [];
+    yearGroups[yearKey].push({ sub, d, subjKey });
+  }
+
+  for (const [yearKey, items] of Object.entries(yearGroups)) {
+    const yLabel = yearLabel[yearKey] || yearKey;
+    lines.push(`【${yLabel}】`);
+    for (const { sub, d, subjKey } of items) {
+      const qs = d.questions;
+      const done    = qs.filter(q => progress[q.id] !== undefined).length;
+      const correct = qs.filter(q => progress[q.id]?.correct).length;
+      const pct = done > 0 ? Math.round((correct / done) * 100) : 0;
+      const sLabel = subjectLabel[subjKey] || d.subject || subjKey;
+      const shortLabel = sLabel === '伝送交換設備及び設備管理' ? '伝送交換設備' : sLabel;
+      lines.push(`  ${shortLabel}\n  解答済み: ${done}/${qs.length}問  正答率: ${done > 0 ? pct + '%' : '未解答'}`);
+    }
+    lines.push('');
+  }
+  alert(lines.join('\n'));
+}
+
+// ===== UTILS =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ===== ADMIN =====
+let adminAuthed = false;
+
+function adminLogin() {
+  const key = document.getElementById('admin-key-input').value.trim();
+  const msg = document.getElementById('admin-login-msg');
+  if (key === ADMIN_KEY) {
+    adminAuthed = true;
+    document.getElementById('admin-login-section').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    document.getElementById('admin-status-badge').textContent = '認証済み';
+    msg.textContent = '';
+  } else {
+    msg.className = 'admin-msg err';
+    msg.textContent = '管理者キーが正しくありません';
+  }
+}
+
+async function adminLoadUsers() {
+  if (!adminAuthed) return;
+  const listEl = document.getElementById('admin-user-list');
+  listEl.innerHTML = '<div style="font-size:13px;color:var(--text3)">読み込み中...</div>';
+
+  try {
+    const res = await fetch(`${GAS_URL}?action=list&key=${encodeURIComponent(ADMIN_KEY)}`);
+    const data = await res.json();
+
+    if (!data.ok) {
+      listEl.innerHTML = `<div style="font-size:13px;color:var(--red)">${data.error || 'エラーが発生しました'}</div>`;
+      return;
+    }
+
+    if (!data.users || data.users.length === 0) {
+      listEl.innerHTML = '<div style="font-size:13px;color:var(--text3)">ユーザーが登録されていません</div>';
+      return;
+    }
+
+    listEl.innerHTML = '';
+    data.users.forEach(u => {
+      const div = document.createElement('div');
+      div.className = 'user-row';
+      // UIDからニックネーム部分だけ取り出す（uid = "name_xxxxx"形式）
+      const displayName = u.uid.split('_')[0] || u.uid;
+      div.innerHTML = `
+        <div class="user-row-info">
+          <div class="user-row-name">👤 ${displayName}</div>
+          <div class="user-row-uid">${u.uid}</div>
+          <div class="user-row-date">更新: ${u.updated ? u.updated.slice(0,16).replace('T',' ') : '-'}</div>
+        </div>
+        <button class="admin-btn danger" onclick="adminDeleteUser('${u.uid}', this)">削除</button>
+      `;
+      listEl.appendChild(div);
+    });
+  } catch(e) {
+    listEl.innerHTML = '<div style="font-size:13px;color:var(--red)">通信エラー: GASに接続できませんでした</div>';
+  }
+}
+
+async function adminDeleteUser(uid, btn) {
+  if (!confirm(`このユーザーを削除しますか？\n${uid}`)) return;
+  btn.disabled = true;
+  btn.textContent = '削除中...';
+
+  try {
+    const res = await fetch(`${GAS_URL}?action=delete&uid=${encodeURIComponent(uid)}&key=${encodeURIComponent(ADMIN_KEY)}`);
+    const data = await res.json();
+    if (data.ok) {
+      btn.closest('.user-row').remove();
+    } else {
+      alert(data.error || '削除に失敗しました');
+      btn.disabled = false;
+      btn.textContent = '削除';
+    }
+  } catch(e) {
+    alert('通信エラーが発生しました');
+    btn.disabled = false;
+    btn.textContent = '削除';
+  }
+}
+
+async function adminDeleteByUid() {
+  const uid = document.getElementById('admin-del-uid').value.trim();
+  const msg = document.getElementById('admin-del-msg');
+  msg.textContent = '';
+  if (!uid) { msg.className = 'admin-msg err'; msg.textContent = 'UIDを入力してください'; return; }
+  if (!confirm(`このUIDを削除しますか？\n${uid}`)) return;
+
+  msg.className = 'admin-msg'; msg.textContent = '削除中...';
+  try {
+    const res = await fetch(`${GAS_URL}?action=delete&uid=${encodeURIComponent(uid)}&key=${encodeURIComponent(ADMIN_KEY)}`);
+    const data = await res.json();
+    if (data.ok) {
+      msg.className = 'admin-msg ok';
+      msg.textContent = '✓ 削除しました';
+      document.getElementById('admin-del-uid').value = '';
+    } else {
+      msg.className = 'admin-msg err';
+      msg.textContent = data.error || '削除に失敗しました（ユーザーが存在しない可能性があります）';
+    }
+  } catch(e) {
+    msg.className = 'admin-msg err';
+    msg.textContent = '通信エラーが発生しました';
+  }
+}
+
+// ===== PWA Install =====
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+  document.getElementById('install-btn').style.display = 'block';
+});
+
+async function installPWA() {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  const { outcome } = await deferredInstall.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('install-btn').style.display = 'none';
+  }
+  deferredInstall = null;
+}
+
+// Register SW
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// Start
+init();
+</script>
+</body>
+</html>

@@ -2086,6 +2086,7 @@ function goTo(screen) {
   const el = document.getElementById(`screen-${screen}`);
   if (el) el.classList.add('active');
   window.scrollTo(0, 0);
+  if (screen === 'flashcard') fcInit();
 }
 
 function openSubject(subjectId) {
@@ -2944,15 +2945,6 @@ function fcRetryNg() {
 
 function fcRestart() {
   fcLoadCards();
-}
-
-// goToのフックでfcInitを呼ぶ
-const _origGoTo = goTo;
-function goTo(screen) {
-  _origGoTo(screen);
-  if (screen === 'flashcard') {
-    fcInit();
-  }
 }
 
 // Start

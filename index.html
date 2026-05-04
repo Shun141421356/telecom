@@ -1748,7 +1748,7 @@
 <script>
 // ===== CONFIG =====
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwGXghvWEXT97drh8YHI7fUlZ_WoFg339NEV_8YqXd7mJ80pjm2GZbAw3yS30auPk2y/exec';
-const ADMIN_KEY = 'admin';
+// ADMIN_KEY はGAS側のスクリプトプロパティで管理（ここには書かない）
 
 // ===== STATE =====
 let allData = {};
@@ -2444,19 +2444,32 @@ function shuffle(arr) {
 
 // ===== ADMIN =====
 let adminAuthed = false;
+let adminKeyCache = ''; // 入力されたキーをセッション中だけメモリ保持（定数には書かない）
 
-function adminLogin() {
+async function adminLogin() {
   const key = document.getElementById('admin-key-input').value.trim();
   const msg = document.getElementById('admin-login-msg');
-  if (key === ADMIN_KEY) {
-    adminAuthed = true;
-    document.getElementById('admin-login-section').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
-    document.getElementById('admin-status-badge').textContent = '認証済み';
-    msg.textContent = '';
-  } else {
+  if (!key) { msg.className = 'admin-msg err'; msg.textContent = 'キーを入力してください'; return; }
+
+  msg.className = 'admin-msg'; msg.textContent = '確認中...';
+
+  try {
+    const res = await fetch(`${GAS_URL}?action=adminCheck&key=${encodeURIComponent(key)}`);
+    const data = await res.json();
+    if (data.ok) {
+      adminAuthed = true;
+      adminKeyCache = key; // 正しかったキーだけメモリに保持
+      document.getElementById('admin-login-section').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      document.getElementById('admin-status-badge').textContent = '認証済み';
+      msg.textContent = '';
+    } else {
+      msg.className = 'admin-msg err';
+      msg.textContent = '管理者キーが正しくありません';
+    }
+  } catch(e) {
     msg.className = 'admin-msg err';
-    msg.textContent = '管理者キーが正しくありません';
+    msg.textContent = '通信エラー: GASに接続できませんでした';
   }
 }
 
@@ -2466,7 +2479,7 @@ async function adminLoadUsers() {
   listEl.innerHTML = '<div style="font-size:13px;color:var(--text3)">読み込み中...</div>';
 
   try {
-    const res = await fetch(`${GAS_URL}?action=list&key=${encodeURIComponent(ADMIN_KEY)}`);
+    const res = await fetch(`${GAS_URL}?action=list&key=${encodeURIComponent(adminKeyCache)}`);
     const data = await res.json();
 
     if (!data.ok) {
@@ -2483,7 +2496,6 @@ async function adminLoadUsers() {
     data.users.forEach(u => {
       const div = document.createElement('div');
       div.className = 'user-row';
-      // UIDからニックネーム部分だけ取り出す（uid = "name_xxxxx"形式）
       const displayName = u.uid.split('_')[0] || u.uid;
       div.innerHTML = `
         <div class="user-row-info">
@@ -2506,7 +2518,7 @@ async function adminDeleteUser(uid, btn) {
   btn.textContent = '削除中...';
 
   try {
-    const res = await fetch(`${GAS_URL}?action=delete&uid=${encodeURIComponent(uid)}&key=${encodeURIComponent(ADMIN_KEY)}`);
+    const res = await fetch(`${GAS_URL}?action=delete&uid=${encodeURIComponent(uid)}&key=${encodeURIComponent(adminKeyCache)}`);
     const data = await res.json();
     if (data.ok) {
       btn.closest('.user-row').remove();
@@ -2531,7 +2543,7 @@ async function adminDeleteByUid() {
 
   msg.className = 'admin-msg'; msg.textContent = '削除中...';
   try {
-    const res = await fetch(`${GAS_URL}?action=delete&uid=${encodeURIComponent(uid)}&key=${encodeURIComponent(ADMIN_KEY)}`);
+    const res = await fetch(`${GAS_URL}?action=delete&uid=${encodeURIComponent(uid)}&key=${encodeURIComponent(adminKeyCache)}`);
     const data = await res.json();
     if (data.ok) {
       msg.className = 'admin-msg ok';

@@ -992,6 +992,340 @@
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+  /* ===== FLASHCARD SCREEN ===== */
+  #screen-flashcard {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+
+  .fc-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px 16px 24px;
+    overflow-y: auto;
+  }
+
+  .fc-progress-wrap {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .fc-progress-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .fc-progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  .fc-counter {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+
+  /* カード本体 */
+  .fc-card {
+    width: 100%;
+    max-width: 520px;
+    perspective: 1200px;
+    cursor: pointer;
+    min-height: 220px;
+  }
+
+  .fc-card-inner {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 16px;
+  }
+
+  .fc-card.flipped .fc-card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .fc-front, .fc-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 24px 22px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fc-front {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+  }
+
+  .fc-back {
+    background: linear-gradient(135deg, rgba(0,120,255,0.08), rgba(124,58,237,0.08));
+    border: 1.5px solid rgba(0,120,255,0.3);
+    transform: rotateY(180deg);
+  }
+
+  .fc-tag {
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .fc-back .fc-tag { color: var(--accent3); }
+
+  .fc-question {
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .fc-blank {
+    display: inline-block;
+    background: rgba(0,120,255,0.15);
+    border-bottom: 2px solid var(--accent2);
+    border-radius: 3px;
+    padding: 0 6px;
+    min-width: 60px;
+    color: transparent;
+    font-weight: 700;
+    vertical-align: baseline;
+    transition: all 0.3s;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .fc-blank.revealed {
+    color: var(--accent);
+    background: rgba(0,120,255,0.12);
+    border-bottom-color: var(--accent);
+  }
+
+  .fc-hint {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fc-hint-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid var(--text3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    flex-shrink: 0;
+  }
+
+  .fc-answer-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .fc-answer-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .fc-answer-label {
+    font-size: 10px;
+    background: rgba(124,58,237,0.2);
+    color: var(--accent3);
+    border-radius: 4px;
+    padding: 2px 7px;
+    white-space: nowrap;
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .fc-answer-text {
+    font-size: 15px;
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .fc-full-text {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.8;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .fc-source {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* カード下のボタン群 */
+  .fc-actions {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .fc-btn {
+    flex: 1;
+    padding: 13px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .fc-btn:hover { background: var(--surface2); border-color: var(--accent2); }
+  .fc-btn:disabled { opacity: 0.3; cursor: default; }
+  .fc-btn.primary {
+    background: linear-gradient(135deg, var(--accent2), #005fcc);
+    border-color: var(--accent2);
+    color: #fff;
+  }
+  .fc-btn.primary:hover { background: linear-gradient(135deg, #0090ff, var(--accent2)); }
+
+  .fc-self-judge {
+    width: 100%;
+    max-width: 520px;
+    display: none;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .fc-self-judge.visible { display: flex; }
+
+  .fc-judge-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius);
+    border: none;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .fc-judge-btn.ok {
+    background: rgba(0,230,118,0.12);
+    border: 1.5px solid rgba(0,230,118,0.3);
+    color: var(--green);
+  }
+
+  .fc-judge-btn.ng {
+    background: rgba(255,71,87,0.12);
+    border: 1.5px solid rgba(255,71,87,0.3);
+    color: var(--red);
+  }
+
+  .fc-judge-btn.ok:hover { background: rgba(0,230,118,0.22); }
+  .fc-judge-btn.ng:hover { background: rgba(255,71,87,0.22); }
+
+  /* カテゴリ選択 */
+  .fc-category-wrap {
+    width: 100%;
+    max-width: 520px;
+    margin-bottom: 14px;
+  }
+
+  .fc-cat-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  .fc-cat-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .fc-cat-chip {
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  .fc-cat-chip.active {
+    background: rgba(0,120,255,0.12);
+    border-color: var(--accent2);
+    color: var(--accent);
+  }
+
+  .fc-cat-chip:hover { background: var(--surface2); }
+
+  /* 完了バナー */
+  .fc-complete {
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+    padding: 32px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+
+  .fc-complete-icon { font-size: 48px; margin-bottom: 12px; }
+  .fc-complete-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .fc-complete-sub { font-size: 13px; color: var(--text3); line-height: 1.7; }
+  .fc-complete-stats {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  .fc-stat { text-align: center; }
+  .fc-stat-num { font-size: 28px; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
+  .fc-stat-num.green { color: var(--green); }
+  .fc-stat-num.red { color: var(--red); }
+  .fc-stat-label { font-size: 11px; color: var(--text3); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -1189,6 +1523,32 @@
       </div>
       <div class="subject-badge" id="badge-r6_1_system">-</div>
     </div>
+
+    <div class="section-title" style="font-size:12px;color:var(--accent);letter-spacing:1px">📅 令和5年度 第2回</div>
+    <div class="subject-card setubi" onclick="openSubject('r5_2_setubi')">
+      <div class="subject-icon">🔌</div>
+      <div class="subject-info">
+        <h3>伝送交換設備及び設備管理</h3>
+        <p>問1〜問9 · 満点150点 · 合格90点</p>
+      </div>
+      <div class="subject-badge" id="badge-r5_2_setubi">-</div>
+    </div>
+    <div class="subject-card houki" onclick="openSubject('r5_2_houki')">
+      <div class="subject-icon">⚖️</div>
+      <div class="subject-info">
+        <h3>法規</h3>
+        <p>問1〜問5 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r5_2_houki">-</div>
+    </div>
+    <div class="subject-card system" onclick="openSubject('r5_2_system')">
+      <div class="subject-icon">💡</div>
+      <div class="subject-info">
+        <h3>電気通信システム</h3>
+        <p>問1〜問20 · 満点100点 · 合格60点</p>
+      </div>
+      <div class="subject-badge" id="badge-r5_2_system">-</div>
+    </div>
   </div>
 
   <div class="mode-section">
@@ -1214,6 +1574,11 @@
         <span>苦手問題</span>
         <span class="mode-label">間違えた問題のみ</span>
       </button>
+      <button class="mode-btn" onclick="goTo('flashcard')">
+        <span class="mode-icon">🃏</span>
+        <span>法規フラッシュカード</span>
+        <span class="mode-label">数値・語句の穴埋め暗記</span>
+      </button>
     </div>
   </div>
 
@@ -1231,6 +1596,83 @@
     <div class="user-name" id="user-name-display">未ログイン</div>
     <button class="sync-btn" id="sync-btn" onclick="syncNow()">☁ 同期</button>
     <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+  </div>
+</div>
+
+<!-- Screen: Flashcard -->
+<div id="screen-flashcard" class="screen" style="flex-direction:column">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('top')">← 戻る</button>
+    <div class="header-title">法規フラッシュカード</div>
+    <div class="header-badge" id="fc-header-badge">-</div>
+  </div>
+  <div class="fc-body">
+    <!-- カテゴリ選択 -->
+    <div class="fc-category-wrap">
+      <div class="fc-cat-label">カテゴリ</div>
+      <div class="fc-cat-chips" id="fc-cat-chips"></div>
+    </div>
+
+    <!-- プログレスバー -->
+    <div class="fc-progress-wrap">
+      <div class="fc-progress-bar-bg">
+        <div class="fc-progress-bar-fill" id="fc-prog-fill" style="width:0%"></div>
+      </div>
+      <div class="fc-counter" id="fc-counter">0/0</div>
+    </div>
+
+    <!-- カード -->
+    <div class="fc-card" id="fc-card" onclick="fcFlip()">
+      <div class="fc-card-inner" id="fc-card-inner">
+        <div class="fc-front" id="fc-front">
+          <div class="fc-tag">QUESTION — タップして答えを確認</div>
+          <div class="fc-question" id="fc-question-text"></div>
+          <div class="fc-hint">
+            <div class="fc-hint-icon">i</div>
+            <span id="fc-hint-text"></span>
+          </div>
+        </div>
+        <div class="fc-back" id="fc-back">
+          <div class="fc-tag">ANSWER</div>
+          <div class="fc-answer-wrap" id="fc-answer-wrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 自己採点ボタン（裏返し後に表示） -->
+    <div class="fc-self-judge" id="fc-self-judge">
+      <button class="fc-judge-btn ng" onclick="fcJudge(false)">✗ もう一度</button>
+      <button class="fc-judge-btn ok" onclick="fcJudge(true)">✓ 覚えた！</button>
+    </div>
+
+    <!-- 前へ・次へ -->
+    <div class="fc-actions">
+      <button class="fc-btn" id="fc-prev-btn" onclick="fcPrev()">← 前</button>
+      <button class="fc-btn" id="fc-reveal-btn" onclick="fcRevealAll()">全て表示</button>
+      <button class="fc-btn primary" id="fc-next-btn" onclick="fcNext()">次 →</button>
+    </div>
+
+    <!-- 完了画面 -->
+    <div class="fc-complete" id="fc-complete" style="display:none">
+      <div class="fc-complete-icon">🎉</div>
+      <div class="fc-complete-title">セット完了！</div>
+      <div class="fc-complete-stats">
+        <div class="fc-stat">
+          <div class="fc-stat-num green" id="fc-ok-count">0</div>
+          <div class="fc-stat-label">覚えた</div>
+        </div>
+        <div class="fc-stat">
+          <div class="fc-stat-num red" id="fc-ng-count">0</div>
+          <div class="fc-stat-label">もう一度</div>
+        </div>
+      </div>
+      <div class="fc-complete-sub">間違えたカードだけ再挑戦できます</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+        <button class="fc-btn primary" onclick="fcRetryNg()">✗ 間違えたカードをやり直す</button>
+        <button class="fc-btn" onclick="fcRestart()">🔀 シャッフルしてもう一度</button>
+        <button class="fc-btn" onclick="goTo('top')">トップに戻る</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1334,6 +1776,9 @@ const SUBJECTS = [
   { id: 'r6_1_setubi', file: 'data/r6_1_setubi.yaml', year: 'R6-1' },
   { id: 'r6_1_houki',  file: 'data/r6_1_houki.yaml',  year: 'R6-1' },
   { id: 'r6_1_system', file: 'data/r6_1_system.yaml', year: 'R6-1' },
+  { id: 'r5_2_setubi', file: 'data/r5_2_setubi.yaml', year: 'R5-2' },
+  { id: 'r5_2_houki',  file: 'data/r5_2_houki.yaml',  year: 'R5-2' },
+  { id: 'r5_2_system', file: 'data/r5_2_system.yaml', year: 'R5-2' },
 ];
 
 // ===== INIT =====
@@ -1783,7 +2228,7 @@ function renderQuestion() {
     // 科目名を取得して表示
     const subData = allData[currentSubject];
     if (subData) {
-      const yearLabel = { 'r7_2': 'R7-2', 'r7_1': 'R7-1' };
+      const yearLabel = { 'r7_2': 'R7-2', 'r7_1': 'R7-1', 'r6_2': 'R6-2', 'r6_1': 'R6-1', 'r5_2': 'R5-2' };
       const parts = currentSubject.match(/^(r\d+_\d+)_(.+)$/);
       const yearKey = parts ? parts[1] : '';
       const yLabel = yearLabel[yearKey] || yearKey;
@@ -1949,6 +2394,7 @@ function showStats() {
     'r7_1': '令和7年度 第1回',
     'r6_2': '令和6年度 第2回',
     'r6_1': '令和6年度 第1回',
+    'r5_2': '令和5年度 第2回',
   };
 
   let lines = ['📊 科目別正答率\n'];
@@ -2120,6 +2566,393 @@ async function installPWA() {
 // Register SW
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ===== FLASHCARD DATA =====
+const FC_CARDS = [
+  // ── 数値系 ──
+  {
+    id: 'fc_01',
+    category: '数値',
+    source: '有線電気通信設備令 第17条',
+    blanks: ['直流100ボルト', '1メグオーム以上'],
+    question: '屋内電線（光ファイバを除く。）と大地との間及び屋内電線相互間の絶縁抵抗は、【①】の電圧で測定した値で、【②】でなければならない。',
+    hint: '測定電圧と基準値の組み合わせを覚える',
+  },
+  {
+    id: 'fc_02',
+    category: '数値',
+    source: '有線電気通信設備令施行規則（保安機能）',
+    blanks: ['直流200ボルト以上', '1メガオーム以上'],
+    question: '配線設備等の電線相互間及び電線と大地間の絶縁抵抗は、【①】の一の電圧で測定した値で【②】であること。',
+    hint: '屋内電線（100V）との違いに注意',
+  },
+  {
+    id: 'fc_03',
+    category: '数値',
+    source: '端末設備等規則（絶縁耐力）',
+    blanks: ['500ボルト直流', '1メガオーム以上'],
+    question: '端末設備の機器の絶縁耐力は、【①】を加えたとき、【②】であること。',
+    hint: '3つの法令の測定電圧：100V→200V→500V の順に大きくなる',
+  },
+  {
+    id: 'fc_04',
+    category: '数値',
+    source: '有線電気通信設備令 第18条',
+    blanks: ['30センチメートル'],
+    question: '屋内電線は、屋内強電流電線との離隔距離が【①】以下となるときは、総務省令で定めるところによらなければ、設置してはならない。',
+    hint: '30cm＝3桁',
+  },
+  {
+    id: 'fc_05',
+    category: '数値',
+    source: '有線電気通信設備令 第12条',
+    blanks: ['1.8メートル未満'],
+    question: '架空電線の支持物には、取扱者が昇降に使用する足場金具等を地表上【①】の高さに取り付けてはならない。',
+    hint: '1.8m＝ほぼ人の身長',
+  },
+  {
+    id: 'fc_06',
+    category: '数値',
+    source: '有線電気通信設備令 第16条',
+    blanks: ['500メートル'],
+    question: '海底電線は、他人の設置する海底電線又は海底強電流電線との水平距離が【①】以下となるように設置してはならない。',
+    hint: '海底は500m',
+  },
+  {
+    id: 'fc_07',
+    category: '数値',
+    source: '有線電気通信設備令 第9条',
+    blanks: ['プラス10デシベル以下', 'プラス20デシベル以下'],
+    question: '通信回線の電力は、絶対レベルで表わした値で、その周波数が音声周波であるときは【①】、高周波であるときは【②】でなければならない。',
+    hint: '音声周波：10dB、高周波：20dB',
+  },
+  {
+    id: 'fc_08',
+    category: '数値',
+    source: '有線電気通信設備令施行規則 第1条',
+    blanks: ['750ボルト以下', '600ボルト以下'],
+    question: '低圧とは、直流にあっては【①】、交流にあっては【②】の電圧をいう。',
+    hint: '直流の方が交流より高い閾値',
+  },
+  {
+    id: 'fc_09',
+    category: '数値',
+    source: '有線電気通信設備令施行規則 第1条',
+    blanks: ['750ボルトを超え7,000ボルト以下', '600ボルトを超え7,000ボルト以下'],
+    question: '高圧とは、直流にあっては【①】、交流にあっては【②】の電圧をいう。',
+    hint: '上限はどちらも7,000V',
+  },
+  {
+    id: 'fc_10',
+    category: '数値',
+    source: '有線電気通信設備令施行規則（通信回線電力）',
+    blanks: ['50ワット'],
+    question: 'ラジオ放送を行うための有線電気通信設備（音声周波を使用するものに限る。）の通信回線の電力は、最大音量において【①】以下であるとき、絶対レベルの規定が適用されない。',
+    hint: '50W＝家庭用アンプ程度',
+  },
+  {
+    id: 'fc_11',
+    category: '数値',
+    source: '有線電気通信設備令施行規則（通信回線電力）',
+    blanks: ['10ワット'],
+    question: '強電流電線に重畳される通信回線であって、その電力が送信装置の出力で【①】以下であるとき、絶対レベルの規定の適用除外となる。',
+    hint: '重畳回線は10W（ラジオ放送の50Wより小さい）',
+  },
+  {
+    id: 'fc_12',
+    category: '数値',
+    source: '有線電気通信設備令施行規則（屋内電線の離隔）',
+    blanks: ['10センチメートル', '30センチメートル'],
+    question: '屋内電線と低圧の屋内強電流電線との離隔距離は、【①】（屋内強電流電線が強電流裸電線であるときは、【②】）以上とすること。',
+    hint: '絶縁電線：10cm、裸電線：30cm',
+  },
+
+  // ── 含む・除く系 ──
+  {
+    id: 'fc_13',
+    category: '含む・除く',
+    source: '有線電気通信設備令 第1条 第1号',
+    blanks: ['含む', '含む', '以外'],
+    question: '電線とは、有線電気通信（電磁的方式により信号を行うことを【①】。）を行うための導体（絶縁物又は保護物で被覆されている場合は、これらの物を【②】。）であって、強電流電線に重畳される通信回線に係るもの【③】のもの。',
+    hint: '3か所：含む・含む・以外',
+  },
+  {
+    id: 'fc_14',
+    category: '含む・除く',
+    source: '有線電気通信設備令 第1条 第4号',
+    blanks: ['含む'],
+    question: '強電流電線とは、強電流電気の伝送を行うための導体（絶縁物又は保護物で被覆されている場合は、これらの物を【①】。）をいう。',
+    hint: '電線の定義と同じ「含む」',
+  },
+  {
+    id: 'fc_15',
+    category: '含む・除く',
+    source: '有線電気通信設備令 第1条 第5号',
+    blanks: ['含む'],
+    question: '線路とは、送信の場所と受信の場所との間に設置されている電線及びこれに係る中継器その他の機器（これらを支持し、又は保蔵するための工作物を【①】。）をいう。',
+    hint: '支持物も線路に「含む」',
+  },
+  {
+    id: 'fc_16',
+    category: '含む・除く',
+    source: '有線電気通信設備令 第1条 第2号・第3号',
+    blanks: ['のみ', '光ファイバ', '絶縁物及び保護物'],
+    question: '絶縁電線とは絶縁物【①】で被覆されている電線。ケーブルとは【②】並びに【③】で被覆されている電線をいう。',
+    hint: '絶縁電線は「のみ」、ケーブルは光ファイバも含む',
+  },
+  {
+    id: 'fc_17',
+    category: '含む・除く',
+    source: '有線電気通信設備令 第17条',
+    blanks: ['光ファイバを除く'],
+    question: '屋内電線（【①】。以下この条において同じ。）と大地との間及び屋内電線相互間の絶縁抵抗は、直流100ボルトの電圧で測定した値で、1メグオーム以上でなければならない。',
+    hint: '光ファイバは絶縁抵抗の測定対象外',
+  },
+  {
+    id: 'fc_18',
+    category: '含む・除く',
+    source: '有線電気通信設備令 第2条の定義（電線②）',
+    blanks: ['以外'],
+    question: '電線の定義において、強電流電線に重畳される通信回線に係るものは電線に含まれる？含まれない？\n→ 電線とは…強電流電線に重畳される通信回線に係るもの【①】のもの',
+    hint: '「以外」＝含まれない',
+  },
+
+  // ── 遭難・緊急・安全・非常通信 ──
+  {
+    id: 'fc_19',
+    category: '遭難・緊急・安全・非常通信',
+    source: '電波法 第52条 第1号',
+    blanks: ['重大且つ急迫の危険に陥つた'],
+    question: '遭難通信とは、船舶が【①】場合に遭難信号を前置して行う無線通信をいう。',
+    hint: '「陥った」＝すでに危険な状態',
+  },
+  {
+    id: 'fc_20',
+    category: '遭難・緊急・安全・非常通信',
+    source: '電波法 第52条 第2号',
+    blanks: ['重大且つ急迫の危険に陥るおそれがある'],
+    question: '緊急通信とは、船舶が【①】場合その他緊急の事態が発生した場合に緊急信号を前置して行う無線通信をいう。',
+    hint: '「おそれ」＝まだ危険になっていない',
+  },
+  {
+    id: 'fc_21',
+    category: '遭難・緊急・安全・非常通信',
+    source: '電波法 第52条 第3号',
+    blanks: ['船舶の航行に対する重大な危険を予防するために'],
+    question: '安全通信とは、【①】安全信号を前置して行う無線通信をいう。',
+    hint: '「予防」＝他者への警告',
+  },
+  {
+    id: 'fc_22',
+    category: '遭難・緊急・安全・非常通信',
+    source: '電波法 第52条 第4号',
+    blanks: ['地震、台風、洪水、津波、雪害、火災、暴動その他非常の事態', '有線通信を利用することができないか又はこれを利用することが著しく困難'],
+    question: '非常通信とは、【①】が発生し、又は発生するおそれがある場合において、【②】であるときに人命の救助、災害の救援、交通通信の確保又は秩序の維持のために行われる無線通信をいう。',
+    hint: '災害時に有線が使えないとき',
+  },
+  {
+    id: 'fc_23',
+    category: '遭難・緊急・安全・非常通信',
+    source: '電波法 第52条',
+    blanks: ['遭難通信', '緊急通信', '安全通信', '非常通信'],
+    question: '優先順位の高い順に並べよ：\n1位【①】、2位【②】、3位【③】、＊別枠【④】（災害時の代替通信）',
+    hint: '「陥った→おそれ→予防」の時制順',
+  },
+];
+
+// ===== FLASHCARD STATE =====
+let fcCards = [];
+let fcIndex = 0;
+let fcFlipped = false;
+let fcResults = {}; // id -> true/false
+let fcSelectedCat = 'すべて';
+
+function fcInit() {
+  // カテゴリ一覧生成
+  const cats = ['すべて', ...new Set(FC_CARDS.map(c => c.category))];
+  const chipsEl = document.getElementById('fc-cat-chips');
+  chipsEl.innerHTML = '';
+  cats.forEach(cat => {
+    const chip = document.createElement('button');
+    chip.className = 'fc-cat-chip' + (cat === fcSelectedCat ? ' active' : '');
+    chip.textContent = cat;
+    chip.onclick = () => {
+      fcSelectedCat = cat;
+      document.querySelectorAll('.fc-cat-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      fcLoadCards();
+    };
+    chipsEl.appendChild(chip);
+  });
+  fcLoadCards();
+}
+
+function fcLoadCards(cardsOverride) {
+  fcResults = {};
+  fcIndex = 0;
+  if (cardsOverride) {
+    fcCards = cardsOverride;
+  } else {
+    fcCards = fcSelectedCat === 'すべて'
+      ? [...FC_CARDS]
+      : FC_CARDS.filter(c => c.category === fcSelectedCat);
+    // シャッフル
+    for (let i = fcCards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [fcCards[i], fcCards[j]] = [fcCards[j], fcCards[i]];
+    }
+  }
+  document.getElementById('fc-complete').style.display = 'none';
+  document.getElementById('fc-card').style.display = 'block';
+  document.getElementById('fc-self-judge').classList.remove('visible');
+  fcRender();
+}
+
+function fcRender() {
+  const card = fcCards[fcIndex];
+  if (!card) return;
+
+  // 裏返しリセット
+  fcFlipped = false;
+  document.getElementById('fc-card').classList.remove('flipped');
+  document.getElementById('fc-self-judge').classList.remove('visible');
+
+  // プログレス
+  const total = fcCards.length;
+  const pct = total > 0 ? Math.round(((fcIndex) / total) * 100) : 0;
+  document.getElementById('fc-prog-fill').style.width = pct + '%';
+  document.getElementById('fc-counter').textContent = `${fcIndex + 1}/${total}`;
+  document.getElementById('fc-header-badge').textContent = `${fcIndex + 1}/${total}`;
+
+  // 前のボタン
+  document.getElementById('fc-prev-btn').disabled = fcIndex === 0;
+
+  // 表面：穴埋めテキスト
+  let qText = card.question;
+  card.blanks.forEach((ans, i) => {
+    const placeholder = '　'.repeat(Math.max(2, Math.round(ans.length * 0.8)));
+    qText = qText.replace(
+      `【${i === 0 ? '①' : i === 1 ? '②' : i === 2 ? '③' : i === 3 ? '④' : '⑤'}】`,
+      `<span class="fc-blank" data-ans="${ans}" data-idx="${i}" onclick="event.stopPropagation();fcRevealBlank(this)">${placeholder}</span>`
+    );
+  });
+  document.getElementById('fc-question-text').innerHTML = qText;
+  document.getElementById('fc-hint-text').textContent = card.hint || '';
+
+  // 裏面：答え一覧
+  const ansWrap = document.getElementById('fc-answer-wrap');
+  ansWrap.innerHTML = '';
+  const nums = ['①', '②', '③', '④', '⑤'];
+  card.blanks.forEach((ans, i) => {
+    const row = document.createElement('div');
+    row.className = 'fc-answer-row';
+    row.innerHTML = `<span class="fc-answer-label">${nums[i]}</span><span class="fc-answer-text">${ans}</span>`;
+    ansWrap.appendChild(row);
+  });
+
+  // 完全文テキスト
+  const fullDiv = document.createElement('div');
+  fullDiv.className = 'fc-full-text';
+  let fullText = card.question;
+  card.blanks.forEach((ans, i) => {
+    fullText = fullText.replace(`【${nums[i]}】`, `<strong style="color:var(--accent)">${ans}</strong>`);
+  });
+  fullDiv.innerHTML = fullText;
+  ansWrap.appendChild(fullDiv);
+
+  // 出典
+  const srcDiv = document.createElement('div');
+  srcDiv.className = 'fc-source';
+  srcDiv.textContent = '📋 ' + card.source;
+  ansWrap.appendChild(srcDiv);
+}
+
+function fcRevealBlank(el) {
+  el.textContent = el.dataset.ans;
+  el.classList.add('revealed');
+}
+
+function fcRevealAll() {
+  document.querySelectorAll('.fc-blank').forEach(el => {
+    el.textContent = el.dataset.ans;
+    el.classList.add('revealed');
+  });
+}
+
+function fcFlip() {
+  fcFlipped = !fcFlipped;
+  document.getElementById('fc-card').classList.toggle('flipped', fcFlipped);
+  if (fcFlipped) {
+    document.getElementById('fc-self-judge').classList.add('visible');
+  } else {
+    document.getElementById('fc-self-judge').classList.remove('visible');
+  }
+}
+
+function fcJudge(ok) {
+  const card = fcCards[fcIndex];
+  fcResults[card.id] = ok;
+
+  if (fcIndex < fcCards.length - 1) {
+    fcIndex++;
+    fcRender();
+  } else {
+    fcShowComplete();
+  }
+}
+
+function fcPrev() {
+  if (fcIndex > 0) {
+    fcIndex--;
+    fcRender();
+  }
+}
+
+function fcNext() {
+  if (fcIndex < fcCards.length - 1) {
+    fcIndex++;
+    fcRender();
+  } else {
+    fcShowComplete();
+  }
+}
+
+function fcShowComplete() {
+  document.getElementById('fc-card').style.display = 'none';
+  document.getElementById('fc-self-judge').classList.remove('visible');
+
+  const okCount = Object.values(fcResults).filter(v => v).length;
+  const ngCount = Object.values(fcResults).filter(v => !v).length;
+  const unanswered = fcCards.length - Object.keys(fcResults).length;
+
+  document.getElementById('fc-ok-count').textContent = okCount;
+  document.getElementById('fc-ng-count').textContent = ngCount + unanswered;
+  document.getElementById('fc-complete').style.display = 'block';
+  document.getElementById('fc-prog-fill').style.width = '100%';
+  document.getElementById('fc-counter').textContent = `${fcCards.length}/${fcCards.length}`;
+}
+
+function fcRetryNg() {
+  const ngCards = fcCards.filter(c => !fcResults[c.id]);
+  if (ngCards.length === 0) {
+    alert('全カード正解です！🎉');
+    return;
+  }
+  fcLoadCards(ngCards);
+}
+
+function fcRestart() {
+  fcLoadCards();
+}
+
+// goToのフックでfcInitを呼ぶ
+const _origGoTo = goTo;
+function goTo(screen) {
+  _origGoTo(screen);
+  if (screen === 'flashcard') {
+    fcInit();
+  }
 }
 
 // Start

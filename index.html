@@ -609,8 +609,215 @@
   #screen-subject.active { display: flex !important; }
   #screen-quiz.active { display: flex !important; }
   #screen-score.active { display: flex !important; }
+  #screen-flash.active { display: flex !important; }
 
-  /* ===== SETTINGS ===== */
+  /* ===== FLASH CARD ===== */
+  #screen-flash {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+  }
+  .flash-header {
+    padding: 12px 16px 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .flash-category-bar {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 8px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    scrollbar-width: none;
+  }
+  .flash-category-bar::-webkit-scrollbar { display: none; }
+  .fc-cat-btn {
+    flex-shrink: 0;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .fc-cat-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .flash-progress-bar {
+    height: 3px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .flash-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s;
+  }
+  .flash-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .flash-counter {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+  }
+  .flash-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 16px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .flash-card-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .flash-card-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text1);
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    flex: 1;
+  }
+  .flash-blank {
+    display: inline-block;
+    min-width: 60px;
+    border-bottom: 2px solid var(--accent);
+    color: transparent;
+    background: rgba(0,120,255,0.08);
+    border-radius: 4px;
+    padding: 0 4px;
+    font-weight: 700;
+  }
+  .flash-blank.revealed {
+    color: var(--accent);
+    background: rgba(0,120,255,0.12);
+  }
+  .flash-source {
+    font-size: 11px;
+    color: var(--text3);
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+  .flash-answer-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .flash-answer-area .ans-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text3);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .flash-answer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .flash-answer-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text1);
+  }
+  .flash-answer-item .ans-num {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0,120,255,0.15);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flash-answer-item .ans-val {
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .flash-reveal-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px dashed var(--accent);
+    background: transparent;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .flash-reveal-btn:active { opacity: 0.7; }
+  .flash-action-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .flash-btn-again {
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,71,87,0.12);
+    color: var(--red);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .flash-btn-ok {
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(0,200,100,0.12);
+    color: #00c864;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .flash-btn-again:active, .flash-btn-ok:active { opacity: 0.7; }
+  .flash-complete {
+    text-align: center;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .flash-complete-icon { font-size: 48px; }
+  .flash-complete-title { font-size: 20px; font-weight: 700; color: var(--text1); }
+  .flash-complete-sub { font-size: 14px; color: var(--text2); }
   .settings-bar {
     display: flex;
     gap: 8px;
@@ -1248,6 +1455,11 @@
         <span>苦手問題</span>
         <span class="mode-label">間違えた問題のみ</span>
       </button>
+      <button class="mode-btn" onclick="startFlashCard()">
+        <span class="mode-icon">🃏</span>
+        <span>法規フラッシュカード</span>
+        <span class="mode-label">数値・語句の穴埋め暗記</span>
+      </button>
     </div>
   </div>
 
@@ -1332,6 +1544,19 @@
     <button class="nav-btn" onclick="reviewWrong()">間違えた問題を確認</button>
     <button class="nav-btn" onclick="goTo('top')">科目選択に戻る</button>
   </div>
+</div>
+
+<!-- Flash Card Screen -->
+<div id="screen-flash" class="screen">
+  <div class="flash-header">
+    <button class="back-btn" onclick="goTo('top')">← 戻る</button>
+    <div class="header-title">法規フラッシュカード</div>
+  </div>
+  <div class="flash-category-bar" id="fc-category-bar"></div>
+  <div class="flash-progress-bar">
+    <div class="flash-progress-fill" id="fc-progress-fill" style="width:0%"></div>
+  </div>
+  <div class="flash-body" id="fc-body"></div>
 </div>
 
 <!-- Install PWA Button -->
@@ -2160,6 +2385,199 @@ async function installPWA() {
 // Register SW
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ===== FLASH CARD =====
+let fcAllCards = [];
+let fcCards = [];
+let fcIndex = 0;
+let fcCategory = 'すべて';
+let fcRevealed = false;
+let fcProgress = {}; // id -> 'ok' | 'again'
+
+async function startFlashCard() {
+  goTo('flash');
+  if (fcAllCards.length === 0) {
+    try {
+      const res = await fetch('data/houki_flash.yaml');
+      const text = await res.text();
+      fcAllCards = parseFlashYaml(text);
+    } catch(e) {
+      document.getElementById('fc-body').innerHTML =
+        '<div style="padding:20px;color:var(--red)">フラッシュカードデータの読み込みに失敗しました。</div>';
+      return;
+    }
+  }
+  renderFcCategoryBar();
+  fcApplyCategory();
+}
+
+function parseFlashYaml(text) {
+  const cards = [];
+  // cardsブロック以降を取得
+  const cardsStart = text.indexOf('\ncards:');
+  if (cardsStart < 0) return cards;
+  const body = text.slice(cardsStart + 7);
+  // 各カードを "- id:" で分割
+  const blocks = body.split(/\n(?=- id:)/);
+  for (const block of blocks) {
+    if (!block.trim()) continue;
+    const card = {};
+    // id
+    const idM = block.match(/^- id:\s*(.+)/m);
+    if (!idM) continue;
+    card.id = idM[1].trim();
+    // category
+    const catM = block.match(/^\s+category:\s*(.+)/m);
+    card.category = catM ? catM[1].trim() : 'その他';
+    // source
+    const srcM = block.match(/^\s+source:\s*(.+)/m);
+    card.source = srcM ? srcM[1].trim() : '';
+    // front（ブロックスカラー）
+    const frontM = block.match(/^\s+front:\s*\|-\n([\s\S]*?)(?=\n\s+\w+:|$)/m);
+    if (frontM) {
+      card.front = frontM[1].replace(/^\s{4}/gm, '').trimEnd();
+    } else {
+      const frontM2 = block.match(/^\s+front:\s*(.+)/m);
+      card.front = frontM2 ? frontM2[1].trim() : '';
+    }
+    // blanks
+    card.blanks = [];
+    const blanksStart = block.indexOf('\n  blanks:');
+    if (blanksStart >= 0) {
+      const blanksBlock = block.slice(blanksStart);
+      const matches = [...blanksBlock.matchAll(/^\s+- [①-⑳\w]+:\s*"([^"]+)"/gm)];
+      for (const m of matches) card.blanks.push(m[1]);
+      // クォートなしも対応
+      if (card.blanks.length === 0) {
+        const matches2 = [...blanksBlock.matchAll(/^\s+- [①-⑳\w]+:\s*(.+)/gm)];
+        for (const m of matches2) card.blanks.push(m[1].trim());
+      }
+    }
+    cards.push(card);
+  }
+  return cards;
+}
+
+function renderFcCategoryBar() {
+  const categories = ['すべて', ...new Set(fcAllCards.map(c => c.category))];
+  const bar = document.getElementById('fc-category-bar');
+  bar.innerHTML = categories.map(cat =>
+    `<button class="fc-cat-btn${cat === fcCategory ? ' active' : ''}"
+      onclick="fcSetCategory('${cat}')">${cat}</button>`
+  ).join('');
+}
+
+function fcSetCategory(cat) {
+  fcCategory = cat;
+  renderFcCategoryBar();
+  fcApplyCategory();
+}
+
+function fcApplyCategory() {
+  fcCards = fcCategory === 'すべて'
+    ? [...fcAllCards]
+    : fcAllCards.filter(c => c.category === fcCategory);
+  // 「もう一度」のカードを後ろに回す形でシャッフル
+  fcCards = shuffle(fcCards);
+  fcIndex = 0;
+  fcRevealed = false;
+  renderFcCard();
+}
+
+function renderFcCard() {
+  const body = document.getElementById('fc-body');
+  const total = fcCards.length;
+
+  if (fcIndex >= total) {
+    // 完了画面
+    const againCount = fcCards.filter(c => fcProgress[c.id] === 'again').length;
+    document.getElementById('fc-progress-fill').style.width = '100%';
+    body.innerHTML = `
+      <div class="flash-complete">
+        <div class="flash-complete-icon">🎉</div>
+        <div class="flash-complete-title">完了！</div>
+        <div class="flash-complete-sub">${total}枚中 覚えた：${total - againCount}枚 / もう一度：${againCount}枚</div>
+        <button class="flash-reveal-btn" style="margin-top:8px" onclick="fcApplyCategory()">もう一度やる</button>
+        <button class="nav-btn" style="margin-top:4px" onclick="goTo('top')">トップに戻る</button>
+      </div>`;
+    return;
+  }
+
+  const card = fcCards[fcIndex];
+  fcRevealed = false;
+
+  // プログレスバー更新
+  document.getElementById('fc-progress-fill').style.width =
+    `${Math.round((fcIndex / total) * 100)}%`;
+
+  // 穴埋めテキストを生成（①②… を blank スパンに置換）
+  let displayText = card.front;
+  const blankTokens = [...displayText.matchAll(/（　[①-⑳①②③④⑤⑥⑦⑧⑨⑩]　）/g)];
+  // シンプルに（　①　）形式をspanに変換
+  displayText = displayText.replace(
+    /（　([①-⑳①②③④⑤⑥⑦⑧⑨⑩])　）/g,
+    (_, num) => `<span class="flash-blank" data-num="${num}">${num}____</span>`
+  );
+
+  // 答えリスト生成
+  const ansHtml = card.blanks.map((b, i) => {
+    const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+    return `<div class="flash-answer-item">
+      <span class="ans-num">${nums[i] || (i+1)}</span>
+      <span class="ans-val">${b}</span>
+    </div>`;
+  }).join('');
+
+  body.innerHTML = `
+    <div class="flash-counter">${fcIndex + 1} / ${total}</div>
+    <div class="flash-card">
+      <div class="flash-card-label">${card.category}</div>
+      <div class="flash-card-text" id="fc-text">${displayText}</div>
+      <div class="flash-source">📖 ${card.source}</div>
+    </div>
+    <button class="flash-reveal-btn" id="fc-reveal-btn" onclick="fcReveal()">
+      👁 答えを見る
+    </button>
+    <div class="flash-answer-area" id="fc-answer-area" style="display:none">
+      <div class="ans-label">ANSWER</div>
+      <div class="flash-answer-list">${ansHtml}</div>
+    </div>
+    <div class="flash-action-btns" id="fc-action-btns" style="display:none">
+      <button class="flash-btn-again" onclick="fcAnswer('again')">✗ もう一度</button>
+      <button class="flash-btn-ok" onclick="fcAnswer('ok')">✓ 覚えた！</button>
+    </div>`;
+}
+
+function fcReveal() {
+  if (fcRevealed) return;
+  fcRevealed = true;
+  // 穴埋めを答えで埋める
+  const card = fcCards[fcIndex];
+  const spans = document.querySelectorAll('.flash-blank');
+  const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+  spans.forEach(span => {
+    const n = span.getAttribute('data-num');
+    const idx = nums.indexOf(n);
+    if (idx >= 0 && card.blanks[idx] !== undefined) {
+      span.textContent = card.blanks[idx];
+      span.classList.add('revealed');
+    }
+  });
+  document.getElementById('fc-reveal-btn').style.display = 'none';
+  document.getElementById('fc-answer-area').style.display = 'block';
+  document.getElementById('fc-action-btns').style.display = 'grid';
+}
+
+function fcAnswer(result) {
+  const card = fcCards[fcIndex];
+  fcProgress[card.id] = result;
+  if (result === 'again') {
+    // 末尾に追加して後で再出題
+    fcCards.push(card);
+  }
+  fcIndex++;
+  renderFcCard();
 }
 
 // Start

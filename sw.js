@@ -1,4 +1,4 @@
-const CACHE_NAME = 'telecom-v5';
+const CACHE_NAME = 'telecom-v7';
 const ASSETS = [
   './',
   './index.html',
@@ -15,6 +15,13 @@ const ASSETS = [
   './data/r6_1_setubi.yaml',
   './data/r6_1_houki.yaml',
   './data/r6_1_system.yaml',
+  './data/r5_2_setubi.yaml',
+  './data/r5_2_houki.yaml',
+  './data/r5_2_system.yaml',
+  './data/r5_1_setubi.yaml',
+  './data/r5_1_houki.yaml',
+  './data/r5_1_system.yaml',
+  './data/houki_flash.yaml',
 ];
 
 self.addEventListener('install', (e) => {

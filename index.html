@@ -701,18 +701,64 @@
     flex: 1;
   }
   .flash-blank {
-    display: inline-block;
-    min-width: 60px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
     border-bottom: 2px solid var(--accent);
-    color: transparent;
     background: rgba(0,120,255,0.08);
     border-radius: 4px;
-    padding: 0 4px;
+    padding: 0 6px;
     font-weight: 700;
+    vertical-align: baseline;
+    transition: all 0.3s ease;
+  }
+  .flash-blank .blank-num {
+    color: var(--accent);
+    font-size: 0.85em;
+    flex-shrink: 0;
+  }
+  .flash-blank .blank-val {
+    color: transparent;
+    background: rgba(0,120,255,0.15);
+    border-radius: 3px;
+    padding: 0 2px;
+    min-width: 3em;
+    display: inline-block;
+    transition: color 0.3s ease, background 0.3s ease;
   }
   .flash-blank.revealed {
+    background: rgba(0,120,255,0.15);
+    border-bottom-color: var(--green);
+  }
+  .flash-blank.revealed .blank-val {
+    color: var(--green);
+    background: transparent;
+  }
+  /* 問題指示バナー */
+  .fc-question-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,120,255,0.07);
+    border: 1px solid rgba(0,120,255,0.2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 4px;
+  }
+  .fc-question-hint .hint-icon {
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .fc-blank-count {
+    margin-left: auto;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
     color: var(--accent);
     background: rgba(0,120,255,0.12);
+    padding: 2px 7px;
+    border-radius: 10px;
   }
   .flash-source {
     font-size: 11px;
@@ -2513,11 +2559,17 @@ function renderFcCard() {
 
   // 穴埋めテキストを生成（①②… を blank スパンに置換）
   let displayText = card.front;
-  const blankTokens = [...displayText.matchAll(/（　[①-⑳①②③④⑤⑥⑦⑧⑨⑩]　）/g)];
-  // シンプルに（　①　）形式をspanに変換
+  // シンプルに（　①　）形式をspanに変換（番号は見せ、答えのみ隠す）
   displayText = displayText.replace(
     /（　([①-⑳①②③④⑤⑥⑦⑧⑨⑩])　）/g,
-    (_, num) => `<span class="flash-blank" data-num="${num}">${num}____</span>`
+    (_, num) => {
+      // 対応する答えの文字数を使って下線の長さを調整
+      const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+      const idx = nums.indexOf(num);
+      const ansLen = (card.blanks[idx] || '').length;
+      const barWidth = Math.max(3, Math.min(ansLen * 0.9, 10));
+      return `<span class="flash-blank" data-num="${num}"><span class="blank-num">${num}</span><span class="blank-val" style="min-width:${barWidth}em">${card.blanks[idx] || '　　　'}</span></span>`;
+    }
   );
 
   // 答えリスト生成
@@ -2529,15 +2581,24 @@ function renderFcCard() {
     </div>`;
   }).join('');
 
+  const blankCount = card.blanks.length;
+  const hintText = blankCount === 1
+    ? '空欄 <span class="fc-blank-count">1箇所</span> に入る語句を答えてください'
+    : `空欄 <span class="fc-blank-count">${blankCount}箇所</span> に入る語句を答えてください`;
+
   body.innerHTML = `
     <div class="flash-counter">${fcIndex + 1} / ${total}</div>
+    <div class="fc-question-hint">
+      <span class="hint-icon">🖊</span>
+      <span>${hintText}</span>
+    </div>
     <div class="flash-card">
       <div class="flash-card-label">${card.category}</div>
       <div class="flash-card-text" id="fc-text">${displayText}</div>
       <div class="flash-source">📖 ${card.source}</div>
     </div>
     <button class="flash-reveal-btn" id="fc-reveal-btn" onclick="fcReveal()">
-      👁 答えを見る
+      👁 答えを確認する
     </button>
     <div class="flash-answer-area" id="fc-answer-area" style="display:none">
       <div class="ans-label">ANSWER</div>
@@ -2552,7 +2613,7 @@ function renderFcCard() {
 function fcReveal() {
   if (fcRevealed) return;
   fcRevealed = true;
-  // 穴埋めを答えで埋める
+  // 穴埋めを答えで埋める（blank-val spanのみ更新）
   const card = fcCards[fcIndex];
   const spans = document.querySelectorAll('.flash-blank');
   const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
@@ -2560,8 +2621,8 @@ function fcReveal() {
     const n = span.getAttribute('data-num');
     const idx = nums.indexOf(n);
     if (idx >= 0 && card.blanks[idx] !== undefined) {
-      span.textContent = card.blanks[idx];
       span.classList.add('revealed');
+      // blank-val の色を出現させる（テキストはすでに入っているので色変更のみ）
     }
   });
   document.getElementById('fc-reveal-btn').style.display = 'none';

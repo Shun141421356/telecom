@@ -707,7 +707,7 @@
     border-bottom: 2px solid var(--accent);
     background: rgba(0,120,255,0.08);
     border-radius: 4px;
-    padding: 0 6px;
+    padding: 2px 6px;
     font-weight: 700;
     vertical-align: baseline;
     transition: all 0.3s ease;
@@ -718,21 +718,25 @@
     flex-shrink: 0;
   }
   .flash-blank .blank-val {
-    color: transparent;
+    display: inline-block;
+    min-width: 3em;
+    height: 1.2em;
     background: rgba(0,120,255,0.15);
     border-radius: 3px;
-    padding: 0 2px;
-    min-width: 3em;
-    display: inline-block;
-    transition: color 0.3s ease, background 0.3s ease;
+    transition: all 0.3s ease;
   }
   .flash-blank.revealed {
-    background: rgba(0,120,255,0.15);
+    background: rgba(0,200,100,0.12);
     border-bottom-color: var(--green);
   }
-  .flash-blank.revealed .blank-val {
+  .flash-blank.revealed .blank-num {
     color: var(--green);
+  }
+  .flash-blank.revealed .blank-val {
     background: transparent;
+    color: var(--green);
+    height: auto;
+    min-width: unset;
   }
   /* 問題指示バナー */
   .fc-question-hint {
@@ -745,7 +749,6 @@
     padding: 8px 12px;
     font-size: 12px;
     color: var(--text2);
-    margin-bottom: 4px;
   }
   .fc-question-hint .hint-icon {
     font-size: 15px;
@@ -2558,26 +2561,28 @@ function renderFcCard() {
     `${Math.round((fcIndex / total) * 100)}%`;
 
   // 穴埋めテキストを生成（①②… を blank スパンに置換）
-  let displayText = card.front;
-  // シンプルに（　①　）形式をspanに変換（番号は見せ、答えのみ隠す）
+  // ※ 答えテキストはHTMLに直接埋め込まず data-answer 属性に退避してXSS/HTML崩れを防ぐ
+  let displayText = card.front
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 本文をエスケープ
+  const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
   displayText = displayText.replace(
     /（　([①-⑳①②③④⑤⑥⑦⑧⑨⑩])　）/g,
     (_, num) => {
-      // 対応する答えの文字数を使って下線の長さを調整
-      const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
       const idx = nums.indexOf(num);
-      const ansLen = (card.blanks[idx] || '').length;
-      const barWidth = Math.max(3, Math.min(ansLen * 0.9, 10));
-      return `<span class="flash-blank" data-num="${num}"><span class="blank-num">${num}</span><span class="blank-val" style="min-width:${barWidth}em">${card.blanks[idx] || '　　　'}</span></span>`;
+      const answer = card.blanks[idx] || '';
+      const barWidth = Math.max(3, Math.min(answer.length * 0.9, 10));
+      // 答えはdata属性に入れ、blank-valは空のバー（表示は CSS で制御）
+      const escapedAns = answer.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+      return `<span class="flash-blank" data-num="${num}" data-answer="${escapedAns}"><span class="blank-num">${num}</span><span class="blank-val" style="min-width:${barWidth}em"></span></span>`;
     }
   );
 
   // 答えリスト生成
   const ansHtml = card.blanks.map((b, i) => {
-    const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
+    const escaped = b.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     return `<div class="flash-answer-item">
       <span class="ans-num">${nums[i] || (i+1)}</span>
-      <span class="ans-val">${b}</span>
+      <span class="ans-val">${escaped}</span>
     </div>`;
   }).join('');
 
@@ -2613,17 +2618,14 @@ function renderFcCard() {
 function fcReveal() {
   if (fcRevealed) return;
   fcRevealed = true;
-  // 穴埋めを答えで埋める（blank-val spanのみ更新）
-  const card = fcCards[fcIndex];
-  const spans = document.querySelectorAll('.flash-blank');
-  const nums = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'];
-  spans.forEach(span => {
-    const n = span.getAttribute('data-num');
-    const idx = nums.indexOf(n);
-    if (idx >= 0 && card.blanks[idx] !== undefined) {
-      span.classList.add('revealed');
-      // blank-val の色を出現させる（テキストはすでに入っているので色変更のみ）
+  // data-answer属性から答えを取り出してblank-valに表示
+  document.querySelectorAll('.flash-blank').forEach(span => {
+    const answer = span.getAttribute('data-answer') || '';
+    const valEl = span.querySelector('.blank-val');
+    if (valEl) {
+      valEl.textContent = answer;
     }
+    span.classList.add('revealed');
   });
   document.getElementById('fc-reveal-btn').style.display = 'none';
   document.getElementById('fc-answer-area').style.display = 'block';
